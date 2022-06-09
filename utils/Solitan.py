@@ -1,5 +1,4 @@
 
-
 class Solitan:
     def __init__(self):
         self.name = ""
@@ -7,6 +6,7 @@ class Solitan:
         self.info = ""
         self.strengths = ""
         self.workExperience = []
+        self.education = []
 
     def __str__(self):
         return f"""
@@ -14,7 +14,8 @@ class Solitan:
         Rol = {self.rol}
         Info = {self.info}
         Strengths = {self.strengths}
-        Work workExperience = {self.workExperience}"""
+        Work workExperience = {self.workExperience}
+        Education {self.education}"""
 
 
 class WorkExperience:
@@ -33,3 +34,16 @@ class WorkExperience:
         End date = {self.end_date}
         Job Description = {self.job_description}"""
 
+class Education:
+    def __init__(self):
+        self.end_date = ""
+        self.title = ""
+        self.institution = ""
+        self.education_description = ""
+
+    def __repr__(self):
+        return f"""
+        Title = {self.title}
+        Institution= {self.institution}
+        End date = {self.end_date}
+        Education Description = {self.education_description}"""

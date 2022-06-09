@@ -27,6 +27,7 @@ for filename in os.listdir(directory):
         cvTransformer.get_sections()
         cvTransformer.get_personal_info()
         cvTransformer.get_work_experience()
+        cvTransformer.get_education()
 
         print(cvTransformer.solitan)
         print(f)
