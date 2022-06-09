@@ -3,22 +3,31 @@ import json
 import spacy
 import re
 
+from utils.CVTransformer import CVTransformer
 from utils.Solitan import Solitan
+import os
 
-pdf_file = r'assets/Vladimir_Anaimanovich_2022-06-02T12_28_56.954Z.pdf'
+# assign directory
+directory = 'assets'
 
-# Clean the PDF's text from empty lines and reconstruct splited words
-cv = parser.from_file(pdf_file)['content']
-cv = re.sub('\n+', '\n', cv)
-cv = re.sub('-\n+', '', cv)
-cv = re.sub("^[a-zA-Z0-9]*$", '', cv)
+# iterate over files in
+# that directory
+for filename in os.listdir(directory):
+    f = os.path.join(directory, filename)
+    # checking if it is a file
+    if os.path.isfile(f) and f.endswith('.pdf'):
+        # Clean the PDF's text from empty lines and reconstruct splitted words
+        cv = parser.from_file(f)['content']
+        cv = re.sub('\n+', '\n', cv)
+        cv = re.sub('-\n+', '', cv)
+        cv = re.sub("^[a-zA-Z0-9]*$", '', cv)
 
-# Split the document in the different sections
-sections = ['Personal Info', 'Strengths', 'Work history', 'Education', 'Certificates', 'Projects', 'Skills', 'Web presence', 'Languages', 'Hobbies & passions']
-cv_in_sections = dict()
-for i in range(0, len(sections) - 1):
-    cv_splitted = cv.split(sections[i + 1] + '\n')
-    cv_in_sections[sections[i]] = cv_splitted[0]
-    cv = cv_splitted[1]
+        # Split the document in the different sections
+        cvTransformer = CVTransformer(cv)
+        cvTransformer.get_sections()
+        cvTransformer.get_personal_info()
+        cvTransformer.get_work_experience()
 
-print(cv_in_sections)
+        print(cvTransformer.solitan)
+        print(f)
+
