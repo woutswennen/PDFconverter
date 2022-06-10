@@ -1,5 +1,4 @@
 # This is a sample Python script.
-
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 import streamlit as st
@@ -10,33 +9,39 @@ from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
 import fillTemplate
+from utils.CVTransformer import CVTransformer
+from utils.Solitan import Solitan
 
 
-def main():
+@st.cache(allow_output_mutation=True)
+def create_solitan_profile():
+    return Solitan()
 
+
+solitan = create_solitan_profile()
+
+
+def main(solitan=solitan):
     menu = ["Upload", "Edit", "Download", "Upload template"]
     choice = st.sidebar.selectbox("Upload", menu)
 
-
-
     if choice == "Upload":
-        st.subheader("Upload a cv")
+        st.subheader("Upload the solita cv")
+        cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
 
+        st.subheader("Upload the client cv")
+        cv_client_data = st.file_uploader("Upload Client CV", type=["pdf"])
 
-
+        if cv_data is not None:
+            st.subheader("Extracting data...")
+            cvTransformer = CVTransformer(cv_data, solitan)
+            cvTransformer.prepare_and_extract()
+            st.write(solitan)
 
 
     elif choice == "Edit":
-        create_form()
-
-
-
-
-
-
-
-
-
+        create_form(solitan)
+        st.write(solitan)  # TODO: to delete when complited
         # with st.form(key="form1"):
         #     firstname = st.text_input("Firstname")
         #     submit = st.form_submit_button("Submit")
@@ -52,13 +57,9 @@ def main():
         st.subheader("Upload template")
 
 
-def create_form():
-
+def create_form(solitan):
     with st.form("form1"):
-
         st.title("Edit information")
-
-        solitan = {}
 
         addPersonal(solitan)
 
@@ -72,12 +73,8 @@ def create_form():
 
         addSkills(solitan)
 
-
-
         if st.form_submit_button("Download"):
             fillTemplate.argenta((solitan))
-
-
 
 
 def addPersonal(solitan):
@@ -85,23 +82,23 @@ def addPersonal(solitan):
     col1, col2 = st.columns(2)
     with col1:
         # row1
-        solitan['lastname'] = st.text_input("Lastname")
+        solitan.lastname = st.text_input("Lastname", placeholder=solitan.lastname)
         # row2
-        solitan['birthdate'] = st.date_input("Birthdate", datetime.date(2000, 1, 1))
+        solitan.birthdate = st.date_input("Birthdate", datetime.date(2000, 1, 1))
         # row3
         gender_choice = ['Male', 'Female']
-        solitan['gender'] = st.selectbox("Gender", gender_choice)
+        solitan.gender = st.selectbox("Gender", gender_choice)
 
     with col2:
         # row1
-        solitan['firstname'] = st.text_input("Firstname")
+        solitan.firstname = st.text_input("Firstname", placeholder=solitan.name)
         # row2
-        solitan['nationality'] = st.text_input("Nationality")
+        solitan.nationality = st.text_input("Nationality", placeholder=solitan.nationality)
         # row3
         occupation_choice = ['Fulltime', 'Freelance']
-        solitan['work_occupation'] = st.selectbox("Occupation", occupation_choice)
+        solitan.work_occupation = st.selectbox("Occupation", occupation_choice)
 
-    solitan['fitness'] = st.text_input("Why is the candidate a good fit?")
+    solitan.fitness = st.text_input("Why is the candidate a good fit?")
 
 
 def addProfRef(solitan):
@@ -128,23 +125,26 @@ def addProfRef(solitan):
     gd.configure_default_column(editable=True)
     gd.configure_auto_height(True)
     gridoptions = gd.build()
-    grid_response = AgGrid(df, gridOptions=gridoptions, data_return_mode= DataReturnMode.FILTERED_AND_SORTED)
+    grid_response = AgGrid(df, gridOptions=gridoptions, data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
     df = grid_response['data']
     response_array = df.values.tolist()
-    solitan['references'] = response_array
+    solitan.references = response_array
+
 
 def addEducation(solitan):
     st.subheader("Education")
-    solitan['educaiton'] = st.text_area("Education")
+    solitan.education = st.text_area("Education", placeholder=solitan.education)
 
     st.subheader("Certification")
-    solitan['certification'] = st.text_area("Certification")
+    solitan.certifications = st.text_area("Certification", placeholder=solitan.certifications)
+
 
 def addLanguages(solitan):
-    lang = {'french':{}, 'dutch':{}, 'englsih':{}}
+    lang = {'french': {}, 'dutch': {}, 'englsih': {}}
     st.subheader("Languages")
     scale = ['native', 'fluent', 'good', 'basic']
     fra, dut, eng = st.columns(3)
+    # TODO: I think this should iterate into the languages of the solitan
     with fra:
         lang['french']['spoken'] = st.selectbox('French spoken', scale)
         lang['french']['spoken'] = st.selectbox('Dutch spoken', scale)
@@ -158,34 +158,12 @@ def addLanguages(solitan):
         lang['french']['spoken'] = st.selectbox('Dutch comprehension', scale)
         lang['french']['spoken'] = st.selectbox('English comprehension', scale)
 
-    solitan['languages'] = lang
+    solitan.languages = lang
+
 
 def addProfExper(solitan):
     st.subheader('Professional Experience')
-    dict2 = [
-        {
-            'company': 'Solita',
-            'client': 'Argenta',
-            'period': '6/2020-3/2021',
-            'role': 'integration architect',
-            'task': 'mulesoft development',
-            'tools': 'mulesoft',
-            'environment': 'software ag',
-            'methodology': 'agile'
-        },
-        {
-            'company': 'Solita',
-            'client': 'Proximus',
-            'period': '3/2021-9/2021',
-            'role': 'integration architect',
-            'task': 'data engineer',
-            'tools': 'postgresql',
-            'environment': 'postgresql',
-            'methodology': 'agile'
-        }
-    ]
-
-    df2 = pd.DataFrame.from_dict(dict2)
+    df2 = pd.DataFrame([[w.start_date, w.end_date, w.job_title, w.company, w.job_description] for w in solitan.workExperience], columns=['start_date', 'end_date', 'job_title','company', 'job_description'])
     # st.dataframe(data=df)
 
     gd2 = GridOptionsBuilder.from_dataframe(df2)
@@ -193,26 +171,24 @@ def addProfExper(solitan):
     gd2.configure_auto_height(True)
     gridoptions2 = gd2.build()
     grid_response = AgGrid(df2, gridOptions=gridoptions2,
-                   update_mode=GridUpdateMode.SELECTION_CHANGED)
+                           update_mode=GridUpdateMode.SELECTION_CHANGED)
     df = grid_response['data']
     response_array = df.values.tolist()
     print(response_array)
     print(type(response_array))
-    solitan['experience'] = response_array
+    solitan.experience = response_array
+
 
 def addSkills(solitan):
-    solitan['man_skills'] = st.text_area('Management Skills')
+    solitan.man_skills = st.text_area('Management Skills', placeholder=solitan.man_skills)
 
-    solitan['tech_skills'] = st.text_area('Technical Skills')
+    solitan.tech_skills = st.text_area('Technical Skills', placeholder=solitan.tech_skills)
 
-    solitan['other_skills'] = st.text_area('Others')
+    solitan.other_skills = st.text_area('Others', placeholder=solitan.other_skills)
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-   main()
+    main()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
-
-
-
-

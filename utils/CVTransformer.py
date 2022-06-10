@@ -1,16 +1,16 @@
 import re
-
 import spacy
 
 from utils.Solitan import Solitan, WorkExperience, Education, Project
 from spacy.matcher import Matcher
+from tika import parser
 
 
 class CVTransformer:
-    def __init__(self, cv):
+    def __init__(self, cv, solitan):
         self.cv_in_sections = None
         self.cv = cv
-        self.solitan = Solitan()
+        self.solitan = solitan
         self.nlp = spacy.load("en_core_web_lg")
         self.nlp.get_pipe("ner").labels
 
@@ -22,6 +22,24 @@ class CVTransformer:
 
         self.matcher_dates.add('Date', [pattern])
         self.matcher_lower.add('Lower case text', [pattern_lower])
+
+    def prepare_and_extract(self):
+
+        self.cv = parser.from_file(self.cv)['content']
+        self.cv = re.sub('\n+', '\n', self.cv)
+        self.cv = re.sub('-\n+', '', self.cv)
+        self.cv = re.sub("^[a-zA-Z0-9]*$", '', self.cv)
+
+        # Split the document in the different sections
+        self.get_sections()
+        self.get_personal_info()
+        self.get_work_experience()
+        print(type(self.solitan.education))
+        print(type(self.solitan.workExperience))
+        self.get_education()
+        self.get_projects()
+
+        return self.solitan
 
     def get_sections(self):
         sections = ['Personal Info', 'Strengths', 'Work history', 'Education', 'Certificates', 'Projects', 'Skills',

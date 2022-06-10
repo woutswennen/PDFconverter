@@ -1,12 +1,25 @@
 class Solitan:
     def __init__(self):
         self.name = ""
+        self.lastname = ""
         self.rol = ""
+        self.gender = ""
+        self.birthday = ""
+        self.nationality = ""
+        self.work_occupation = ""
+        self.fitness = "" #TODO: This i'm not sure should be part of the Solitan object
         self.info = ""
         self.strengths = ""
+        self.references = ""
+        self.certifications = ""
+
         self.workExperience = []
-        self.education = []
+        self.education = list()
         self.projects = []
+        self.languages = []
+        self.other_skills = []
+        self.man_skills = []
+        self.tech_skills = []
 
     def __str__(self):
         return f"""
