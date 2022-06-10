@@ -30,6 +30,7 @@ for filename in os.listdir(directory):
         cvTransformer.get_education()
         cvTransformer.get_projects()
 
+
         print(cvTransformer.solitan)
         print(f)
 
