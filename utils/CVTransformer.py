@@ -2,7 +2,7 @@ import re
 
 import spacy
 
-from utils.Solitan import Solitan, WorkExperience, Education
+from utils.Solitan import Solitan, WorkExperience, Education, Project
 from spacy.matcher import Matcher
 
 
@@ -53,7 +53,6 @@ class CVTransformer:
         for i in range(0, len(date_matches)):
             workExperience = WorkExperience()
             match_id, start, end = date_matches[i]
-            string_id = self.nlp.vocab.strings[match_id]  # Get string representation
             span_date = doc[start:end].text.split('—')
             if len(span_date) > 1:
                 workExperience.start_date, workExperience.end_date = span_date  # The matched span
@@ -89,3 +88,23 @@ class CVTransformer:
                 span_title = span_education_description
             education.title, education.institution = span_title.strip("— .").split(',')
             self.solitan.education.append(education)
+
+    def get_projects(self):
+        doc = self.nlp(self.cv_in_sections['Projects'])
+        date_matches = self.matcher_dates(doc)
+        for i in range(0, len(date_matches)):
+            project = Project()
+            match_id, start, end = date_matches[i]
+            span_date = doc[start:end].text.split('—')
+            if len(span_date) > 1:
+                project.start_date, project.end_date = span_date  # The matched span
+            else:
+                project.start_date = span_date[0]
+
+            if i < len(date_matches) - 1:
+                span_project_description = doc[end:date_matches[i + 1][1]].text.splitlines()
+            else:
+                span_project_description = doc[end::].text.splitlines()
+            project.project_title, project.client = span_project_description.pop(0).strip(' —.').split(',', 1)
+            project.project_description = " ".join(span_project_description)
+            self.solitan.projects.append(project)
