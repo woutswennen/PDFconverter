@@ -200,11 +200,11 @@ def addProfExper(solitan):
 
 
 def addSkills(solitan):
-    solitan.man_skills = st.text_area('Management Skills', placeholder=solitan.man_skills)
+    solitan.man_skills = st.text_area('Management Skills', value=solitan.man_skills)
 
-    solitan.tech_skills = st.text_area('Technical Skills', placeholder=solitan.tech_skills)
+    solitan.tech_skills = st.text_area('Technical Skills', value=solitan.tech_skills)
 
-    solitan.other_skills = st.text_area('Others', placeholder=solitan.other_skills)
+    solitan.other_skills = st.text_area('Others', values=solitan.other_skills)
 
 
 # Press the green button in the gutter to run the script.
