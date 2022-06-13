@@ -14,7 +14,7 @@ class Solitan:
         self.certifications = ""
 
         self.workExperience = []
-        self.education = list()
+        self.education = []
         self.projects = []
         self.languages = []
         self.other_skills = []
@@ -28,7 +28,7 @@ class Solitan:
         Info = {self.info}
         Strengths = {self.strengths}
         Work workExperience = {self.workExperience}
-        Education {self.education}
+        Education =  {self.education}
         Projects = {self.projects}"""
 
 

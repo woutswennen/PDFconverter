@@ -34,8 +34,6 @@ class CVTransformer:
         self.get_sections()
         self.get_personal_info()
         self.get_work_experience()
-        print(type(self.solitan.education))
-        print(type(self.solitan.workExperience))
         self.get_education()
         self.get_projects()
 
@@ -85,7 +83,9 @@ class CVTransformer:
             workExperience.job_description = " ".join(span_jobdescription)
             self.solitan.workExperience.append(workExperience)
 
+
     def get_education(self):
+        self.solitan.education = list()
         doc = self.nlp(self.cv_in_sections['Education'])
         date_matches = self.matcher_dates(doc)
         for i in range(0, len(date_matches)):

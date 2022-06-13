@@ -82,7 +82,7 @@ def addPersonal(solitan):
     col1, col2 = st.columns(2)
     with col1:
         # row1
-        solitan.lastname = st.text_input("Lastname", placeholder=solitan.lastname)
+        solitan.lastname = st.text_input("Lastname", value=solitan.lastname)
         # row2
         solitan.birthdate = st.date_input("Birthdate", datetime.date(2000, 1, 1))
         # row3
@@ -91,9 +91,9 @@ def addPersonal(solitan):
 
     with col2:
         # row1
-        solitan.firstname = st.text_input("Firstname", placeholder=solitan.name)
+        solitan.firstname = st.text_input("Firstname", value=solitan.name)
         # row2
-        solitan.nationality = st.text_input("Nationality", placeholder=solitan.nationality)
+        solitan.nationality = st.text_input("Nationality", value=solitan.nationality)
         # row3
         occupation_choice = ['Fulltime', 'Freelance']
         solitan.work_occupation = st.selectbox("Occupation", occupation_choice)
@@ -133,13 +133,28 @@ def addProfRef(solitan):
 
 def addEducation(solitan):
     st.subheader("Education")
-    solitan.education = st.text_area("Education", placeholder=solitan.education)
+    df2 = pd.DataFrame([[e.title, e.end_date, e.institution, e.education_description] for e in solitan.education], columns=['title', 'end_date', 'institution', 'education_description'])
+    # st.dataframe(data=df)
+
+    gd2 = GridOptionsBuilder.from_dataframe(df2)
+    gd2.configure_default_column(editable=True)
+    gd2.configure_auto_height(True)
+    gridoptions2 = gd2.build()
+    grid_response = AgGrid(df2, gridOptions=gridoptions2,
+                           update_mode=GridUpdateMode.SELECTION_CHANGED)
+    df = grid_response['data']
+    for index, row in df2.iterrows():
+        solitan.education[index].title = row['title']
+        solitan.education[index].end_date = row['end_date']
+        solitan.education[index].institution = row['institution']
+        solitan.education[index].education_description = row['education_description']
 
     st.subheader("Certification")
     solitan.certifications = st.text_area("Certification", placeholder=solitan.certifications)
 
 
 def addLanguages(solitan):
+    lang = {'french': {}, 'dutch': {}, 'englsih': {}}
     lang = {'french': {}, 'dutch': {}, 'englsih': {}}
     st.subheader("Languages")
     scale = ['native', 'fluent', 'good', 'basic']
@@ -173,10 +188,15 @@ def addProfExper(solitan):
     grid_response = AgGrid(df2, gridOptions=gridoptions2,
                            update_mode=GridUpdateMode.SELECTION_CHANGED)
     df = grid_response['data']
-    response_array = df.values.tolist()
-    print(response_array)
-    print(type(response_array))
-    solitan.experience = response_array
+    for index, row in df2.iterrows():
+        solitan.workExperience[index].start_date = row['start_date']
+        solitan.workExperience[index].end_date = row['end_date']
+        solitan.workExperience[index].job_title = row['job_title']
+        solitan.workExperience[index].company = row['company']
+        solitan.workExperience[index].job_description = row['job_description']
+
+    print(solitan.workExperience)
+
 
 
 def addSkills(solitan):
