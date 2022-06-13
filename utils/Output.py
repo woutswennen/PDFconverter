@@ -11,23 +11,25 @@ rowindex_ex = 1
 
 experiences_dict = {}
 keys = ['Company', 'Client', 'Period', 'Role', 'Tasks', 'Tools', 'Environment', 'Methodology']
-doc = Document('/Users/wout/Documents/Work/Werkman/Untitled/template.docx')
 
 
-def fillExTable(solitan):
+
+def addExTable(input_path, output_path, solitan):
+    doc = Document(input_path)
     experiences = solitan.workExperience
+    print(experiences)
 
     index = 0
     for experience in experiences:
         arg_dict = {}
-        arg_dict['Company'] = experience[0]
-        arg_dict['Client'] = experience[1]
-        arg_dict['Period'] = experience[2]
-        arg_dict['Role'] = experience[3]
-        arg_dict['Tasks'] = experience[4]
-        arg_dict['Tools'] = experience[5]
-        arg_dict['Environment'] = experience[6]
-        arg_dict['Methodology'] = experience[7]
+        arg_dict['Company'] = experience.company
+        arg_dict['Client'] = experience.client
+        arg_dict['Period'] = experience.start_date + ' - ' + "end_date"
+        arg_dict['Role'] = experience.job_description
+        arg_dict['Tasks'] = experience.job_description
+        arg_dict['Tools'] = experience.job_description
+        arg_dict['Environment'] = experience.job_description
+        arg_dict['Methodology'] = experience.job_description
 
         experiences_dict[str(index)] = arg_dict
 
@@ -35,8 +37,8 @@ def fillExTable(solitan):
 
 
 
-    fillExTable(tableindex_ex, rowindex_ex, experiences_dict)
-    doc.save('renderedTest.docx')
+    fillExTable(doc, tableindex_ex, rowindex_ex, experiences_dict)
+    doc.save(output_path)
 
 
 
@@ -57,7 +59,7 @@ def addExRows(table, row):
     return new_row
 
 
-def fillExTable(table_index, start_row_index, data):
+def fillExTable(doc, table_index, start_row_index, data):
     table = doc.tables[table_index]
     experience_count = len(data)
 

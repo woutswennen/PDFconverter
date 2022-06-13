@@ -3,16 +3,15 @@
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 import streamlit as st
 import pandas as pd
-import time
 import datetime
 from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
-
-import fillTemplate
+from utils.Output import addExTable
+import utils.fillTemplate as fill
 from utils.CVTransformer import CVTransformer
 from utils.Solitan import Solitan
-from utils.Output import fillExTable
+from utils.Output import addExTable
 
 
 @st.cache(allow_output_mutation=True)
@@ -75,12 +74,17 @@ def create_form(solitan):
 
         addSkills(solitan)
 
-        fillExTable(solitan)
 
 
 
         if st.form_submit_button("Download"):
-            fillTemplate.argenta((solitan))
+
+            input_path = 'assets/template.docx'
+            inbetween_path = 'assets/semi_filled_template.docx'
+            output_path = 'assets/filled_template.docx'
+
+            addExTable(input_path, inbetween_path, solitan)
+            fill.argenta(inbetween_path, output_path, solitan)
 
 
 def addPersonal(solitan):
@@ -200,6 +204,8 @@ def addProfExper(solitan):
         solitan.workExperience[index].job_title = row['job_title']
         solitan.workExperience[index].company = row['company']
         solitan.workExperience[index].job_description = row['job_description']
+        #TODO
+        solitan.workExperience[index].client = "client"
 
     print(solitan.workExperience)
 
