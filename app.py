@@ -8,9 +8,11 @@ import datetime
 from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
+
 import fillTemplate
 from utils.CVTransformer import CVTransformer
 from utils.Solitan import Solitan
+from utils.Output import fillExTable
 
 
 @st.cache(allow_output_mutation=True)
@@ -72,6 +74,10 @@ def create_form(solitan):
         addProfExper(solitan)
 
         addSkills(solitan)
+
+        fillExTable(solitan)
+
+
 
         if st.form_submit_button("Download"):
             fillTemplate.argenta((solitan))
@@ -204,7 +210,7 @@ def addSkills(solitan):
 
     solitan.tech_skills = st.text_area('Technical Skills', value=solitan.tech_skills)
 
-    solitan.other_skills = st.text_area('Others', values=solitan.other_skills)
+    solitan.other_skills = st.text_area('Others', value=solitan.other_skills)
 
 
 # Press the green button in the gutter to run the script.
