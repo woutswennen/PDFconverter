@@ -25,11 +25,11 @@ def addExTable(input_path, output_path, solitan):
         arg_dict['Company'] = experience.company
         arg_dict['Client'] = experience.client
         arg_dict['Period'] = experience.start_date + ' - ' + "end_date"
-        arg_dict['Role'] = experience.job_description
-        arg_dict['Tasks'] = experience.job_description
-        arg_dict['Tools'] = experience.job_description
-        arg_dict['Environment'] = experience.job_description
-        arg_dict['Methodology'] = experience.job_description
+        arg_dict['Role'] = experience.role
+        arg_dict['Tasks'] = experience.tasks
+        arg_dict['Tools'] = experience.tools
+        arg_dict['Environment'] = experience.environment
+        arg_dict['Methodology'] = experience.methodology
 
         experiences_dict[str(index)] = arg_dict
 

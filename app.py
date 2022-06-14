@@ -1,6 +1,9 @@
 # This is a sample Python script.
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+import os
+import random
+
 import streamlit as st
 import pandas as pd
 import datetime
@@ -30,8 +33,7 @@ def main(solitan=solitan):
         st.subheader("Upload the solita cv")
         cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
 
-        st.subheader("Upload the client cv")
-        cv_client_data = st.file_uploader("Upload Client CV", type=["pdf"])
+
 
         if cv_data is not None:
             st.subheader("Extracting data...")
@@ -54,8 +56,33 @@ def main(solitan=solitan):
 
     elif choice == "Download":
         st.subheader("Download the new pdf")
+
+
     elif choice == "Upload template":
-        st.subheader("Upload template")
+
+
+
+
+        st.title("idk")
+        uploadedfiles = st.file_uploader("upload file")
+
+        save_uploadedfile(uploadedfiles)
+
+        st.subheader("All templates")
+        for file in os.listdir('assets/Templates'):
+            st.write(file)
+            st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
+
+def save_uploadedfile(uploadedfile):
+    with open(os.path.join("assets/Templates", uploadedfile.name), "wb") as f:
+        print(uploadedfile.getbuffer())
+        f.write(uploadedfile.getbuffer())
+        return st.success("Saved File:{} to assets/Templates".format(uploadedfile.name))
+
+def removeTemplateFile(filename):
+    os.remove('assets/Templates/' + filename)
+
+
 
 
 def create_form(solitan):
@@ -79,7 +106,7 @@ def create_form(solitan):
 
         if st.form_submit_button("Download"):
 
-            input_path = 'assets/template.docx'
+            input_path = 'assets/Templates/cv_template.docx'
             inbetween_path = 'assets/semi_filled_template.docx'
             output_path = 'assets/filled_template.docx'
 

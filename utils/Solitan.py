@@ -12,7 +12,7 @@ class Solitan:
         self.strengths = ""
         self.references = ""
         self.certifications = ""
-
+        self.availability = ""
         self.workExperience = []
         self.education = []
         self.projects = []
@@ -40,6 +40,13 @@ class WorkExperience:
         self.company = ""
         self.client = ""
         self.job_description = ""
+        self.role = ""
+        self.tasks = ""
+        self.tools = ""
+        self.environment = ""
+        self.methodology = ""
+
+
 
     def __repr__(self):
         return f"""
