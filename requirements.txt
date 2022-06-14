@@ -4,3 +4,6 @@ pandas==1.4.2
 spacy==3.3.0
 streamlit==1.10.0
 tika==1.24
+
+## Install package for spacy NER if outdated use 'python -m spacy download en_core_web_lg'
+https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.3.0/en_core_web_lg-3.3.0-py3-none-any.whl

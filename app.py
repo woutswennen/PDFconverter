@@ -150,7 +150,25 @@ def addEducation(solitan):
         solitan.education[index].education_description = row['education_description']
 
     st.subheader("Certification")
-    solitan.certifications = st.text_area("Certification", placeholder=solitan.certifications)
+    df3 = pd.DataFrame(
+        [[c.start_date, c.end_date, c.cert_title, c.technology] for c in solitan.certifications],
+        columns=['start_date', 'end_date', 'cert_title', 'technology'])
+    # st.dataframe(data=df)
+
+    gd3 = GridOptionsBuilder.from_dataframe(df3)
+    gd3.configure_default_column(editable=True)
+    gd3.configure_auto_height(True)
+    gridoptions3 = gd3.build()
+    grid_response3 = AgGrid(df3, gridOptions=gridoptions3,
+                           update_mode=GridUpdateMode.SELECTION_CHANGED)
+    df = grid_response3['data']
+    for index, row in df3.iterrows():
+        solitan.certifications[index].start_date = row['start_date']
+        solitan.certifications[index].end_date = row['end_date']
+        solitan.certifications[index].cert_title = row['cert_title']
+        solitan.certifications[index].technology = row['technology']
+
+    print(solitan.certifications)
 
 
 def addLanguages(solitan):
@@ -195,8 +213,6 @@ def addProfExper(solitan):
         solitan.workExperience[index].company = row['company']
         solitan.workExperience[index].job_description = row['job_description']
 
-    print(solitan.workExperience)
-
 
 
 def addSkills(solitan):
@@ -204,7 +220,7 @@ def addSkills(solitan):
 
     solitan.tech_skills = st.text_area('Technical Skills', value=solitan.tech_skills)
 
-    solitan.other_skills = st.text_area('Others', values=solitan.other_skills)
+    solitan.other_skills = st.text_area('Others', value=solitan.other_skills)
 
 
 # Press the green button in the gutter to run the script.

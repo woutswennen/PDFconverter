@@ -7,12 +7,12 @@ class Solitan:
         self.birthday = ""
         self.nationality = ""
         self.work_occupation = ""
-        self.fitness = "" #TODO: This i'm not sure should be part of the Solitan object
+        self.fitness = ""  # TODO: This i'm not sure should be part of the Solitan object
         self.info = ""
         self.strengths = ""
         self.references = ""
-        self.certifications = ""
 
+        self.certifications = []
         self.workExperience = []
         self.education = []
         self.projects = []
@@ -29,7 +29,8 @@ class Solitan:
         Strengths = {self.strengths}
         Work workExperience = {self.workExperience}
         Education =  {self.education}
-        Projects = {self.projects}"""
+        Projects = {self.projects}
+        Certifications = {self.certifications} """
 
 
 class WorkExperience:
@@ -79,3 +80,20 @@ class Project:
         Start date = {self.start_date}
         End date = {self.end_date}
         Project Description = {self.project_description}"""
+
+
+class Certification:
+    def __init__(self):
+        self.start_date = ""
+        self.end_date = ""
+        self.cert_title = ""
+        self.technology = ""
+        self.reference = ""
+
+    def __repr__(self):
+        return f"""/n
+        Certification : {self.cert_title}
+        Start date = {self.start_date}
+        End date = {self.end_date}
+        Technology = {self.technology}
+        Reference = {self.reference}"""
