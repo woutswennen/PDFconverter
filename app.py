@@ -119,18 +119,6 @@ def addProfRef(solitan):
             'contact_name': 'Freddie',
             'profecional_relationship': 'IDK2',
             'contact': 'wout.swennen@gmail.com'
-        },
-        {
-            'company': 'Solita',
-            'contact_name': 'Jos',
-            'profecional_relationship': 'IDK',
-            'contact': '+32493706578'
-        },
-        {
-            'company': 'B-post',
-            'contact_name': 'Freddie',
-            'profecional_relationship': 'IDK2',
-            'contact': 'wout.swennen@gmail.com'
         }
     ]
 
