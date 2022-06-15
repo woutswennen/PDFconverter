@@ -23,14 +23,15 @@ class Solitan:
 
     def __str__(self):
         return f"""
-        Name = {self.name}
-        Rol = {self.rol}
-        Info = {self.info}
-        Strengths = {self.strengths}
-        Work workExperience = {self.workExperience}
-        Education =  {self.education}
-        Projects = {self.projects}
-        Certifications = {self.certifications} """
+        Name = {self.name}\n
+        Lasname = {self.lastname}\n
+        Rol = {self.rol}\n
+        Info = {self.info}\~
+        Strengths = {self.strengths}\n
+        Work workExperience = {self.workExperience}\n
+        Education =  {self.education}\n
+        Projects = {self.projects}\n
+        Certifications = {self.certifications}\n """
 
 
 class WorkExperience:
@@ -42,12 +43,12 @@ class WorkExperience:
         self.job_description = ""
 
     def __repr__(self):
-        return f"""
+        return f"""\n
         Job Title = {self.job_title}
         Company = {self.company}
         Start date = {self.start_date}
         End date = {self.end_date}
-        Job Description = {self.job_description}"""
+        Job Description = {self.job_description}\n"""
 
 
 class Education:
@@ -58,11 +59,11 @@ class Education:
         self.education_description = ""
 
     def __repr__(self):
-        return f"""
+        return f"""\n
         Title = {self.title}
         Institution= {self.institution}
         End date = {self.end_date}
-        Education Description = {self.education_description}"""
+        Education Description = {self.education_description}\n"""
 
 
 class Project:
@@ -74,12 +75,12 @@ class Project:
         self.project_description = ""
 
     def __repr__(self):
-        return f"""
+        return f"""\n
         Title = {self.project_title}
         Client = {self.client}
         Start date = {self.start_date}
         End date = {self.end_date}
-        Project Description = {self.project_description}"""
+        Project Description = {self.project_description}\n"""
 
 
 class Certification:
@@ -91,9 +92,9 @@ class Certification:
         self.reference = ""
 
     def __repr__(self):
-        return f"""/n
+        return f"""\n
         Certification : {self.cert_title}
         Start date = {self.start_date}
         End date = {self.end_date}
         Technology = {self.technology}
-        Reference = {self.reference}"""
+        Reference = {self.reference}\n"""

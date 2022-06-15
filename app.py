@@ -29,11 +29,9 @@ def main(solitan=solitan):
         st.subheader("Upload the solita cv")
         cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
 
-        st.subheader("Upload the client cv")
-        cv_client_data = st.file_uploader("Upload Client CV", type=["pdf"])
-
         if cv_data is not None:
             st.subheader("Extracting data...")
+            solitan = Solitan()
             cvTransformer = CVTransformer(cv_data, solitan)
             cvTransformer.prepare_and_extract()
             st.write(solitan)
@@ -115,6 +113,18 @@ def addProfRef(solitan):
             'contact_name': 'Freddie',
             'profecional_relationship': 'IDK2',
             'contact': 'wout.swennen@gmail.com'
+        },
+        {
+            'company': 'Solita',
+            'contact_name': 'Jos',
+            'profecional_relationship': 'IDK',
+            'contact': '+32493706578'
+        },
+        {
+            'company': 'B-post',
+            'contact_name': 'Freddie',
+            'profecional_relationship': 'IDK2',
+            'contact': 'wout.swennen@gmail.com'
         }
     ]
 
@@ -123,7 +133,7 @@ def addProfRef(solitan):
 
     gd = GridOptionsBuilder.from_dataframe(df)
     gd.configure_default_column(editable=True)
-    gd.configure_auto_height(True)
+    gd.configure_auto_height(False)
     gridoptions = gd.build()
     grid_response = AgGrid(df, gridOptions=gridoptions, data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
     df = grid_response['data']
@@ -138,7 +148,7 @@ def addEducation(solitan):
 
     gd2 = GridOptionsBuilder.from_dataframe(df2)
     gd2.configure_default_column(editable=True)
-    gd2.configure_auto_height(True)
+    gd2.configure_auto_height(False)
     gridoptions2 = gd2.build()
     grid_response = AgGrid(df2, gridOptions=gridoptions2,
                            update_mode=GridUpdateMode.SELECTION_CHANGED)
@@ -154,10 +164,11 @@ def addEducation(solitan):
         [[c.start_date, c.end_date, c.cert_title, c.technology] for c in solitan.certifications],
         columns=['start_date', 'end_date', 'cert_title', 'technology'])
     # st.dataframe(data=df)
+    print(df3)
 
     gd3 = GridOptionsBuilder.from_dataframe(df3)
     gd3.configure_default_column(editable=True)
-    gd3.configure_auto_height(True)
+    gd3.configure_auto_height(False)
     gridoptions3 = gd3.build()
     grid_response3 = AgGrid(df3, gridOptions=gridoptions3,
                            update_mode=GridUpdateMode.SELECTION_CHANGED)
@@ -167,8 +178,6 @@ def addEducation(solitan):
         solitan.certifications[index].end_date = row['end_date']
         solitan.certifications[index].cert_title = row['cert_title']
         solitan.certifications[index].technology = row['technology']
-
-    print(solitan.certifications)
 
 
 def addLanguages(solitan):
@@ -201,7 +210,7 @@ def addProfExper(solitan):
 
     gd2 = GridOptionsBuilder.from_dataframe(df2)
     gd2.configure_default_column(editable=True)
-    gd2.configure_auto_height(True)
+    gd2.configure_auto_height(False)
     gridoptions2 = gd2.build()
     grid_response = AgGrid(df2, gridOptions=gridoptions2,
                            update_mode=GridUpdateMode.SELECTION_CHANGED)
@@ -212,6 +221,24 @@ def addProfExper(solitan):
         solitan.workExperience[index].job_title = row['job_title']
         solitan.workExperience[index].company = row['company']
         solitan.workExperience[index].job_description = row['job_description']
+
+    st.subheader('Projects')
+    df4 = pd.DataFrame([[p.start_date, p.end_date, p.client, p.project_title, p.project_description] for p in solitan.projects], columns=['start_date', 'end_date', 'client','project_title', 'project_description'])
+    # st.dataframe(data=df)
+
+    gd4 = GridOptionsBuilder.from_dataframe(df4)
+    gd4.configure_default_column(editable=True)
+    gd4.configure_auto_height(False)
+    gridoptions4 = gd4.build()
+    grid_response4 = AgGrid(df4, gridOptions=gridoptions4, update_mode=GridUpdateMode.SELECTION_CHANGED)
+
+    df = grid_response4['data']
+    for index, row in df4.iterrows():
+        solitan.projects[index].start_date = row['start_date']
+        solitan.projects[index].end_date = row['end_date']
+        solitan.projects[index].project_title = row['project_title']
+        solitan.projects[index].clinet = row['client']
+        solitan.projects[index].project_description = row['project_description']
 
 
 

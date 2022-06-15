@@ -136,8 +136,8 @@ class CVTransformer:
     def get_certificates(self):
         doc = self.nlp(self.cv_in_sections['Certificates'])
         date_matches = self.filter_matches_by_longest_string(self.matcher_dates(doc))
-        certification = Certification()
         for i in range(0, len(date_matches)):
+            certification = Certification()
             match_id, start, end = date_matches[i]
             span_date = doc[start:end].text.split('—')
             if len(span_date) > 1:
