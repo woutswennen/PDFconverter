@@ -40,6 +40,7 @@ class WorkExperience:
         self.end_date = ""
         self.job_title = ""
         self.company = ""
+        self.client = ""
         self.job_description = ""
 
     def __repr__(self):
