@@ -32,7 +32,7 @@ def main(solitan=solitan):
 
         if cv_data is not None:
             st.subheader("Extracting data...")
-            solitan = Solitan()
+            # solitan = Solitan()
             cvTransformer = CVTransformer(cv_data, solitan)
             cvTransformer.prepare_and_extract()
             st.write(solitan)
@@ -72,11 +72,7 @@ def create_form(solitan):
 
         addSkills(solitan)
 
-
-
-
         if st.form_submit_button("Download"):
-
             input_path = 'assets/template.docx'
             inbetween_path = 'assets/semi_filled_template.docx'
             output_path = 'assets/filled_template.docx'
@@ -153,7 +149,8 @@ def addProfRef(solitan):
 
 def addEducation(solitan):
     st.subheader("Education")
-    df2 = pd.DataFrame([[e.title, e.end_date, e.institution, e.education_description] for e in solitan.education], columns=['title', 'end_date', 'institution', 'education_description'])
+    df2 = pd.DataFrame([[e.title, e.end_date, e.institution, e.education_description] for e in solitan.education],
+                       columns=['title', 'end_date', 'institution', 'education_description'])
     # st.dataframe(data=df)
 
     gd2 = GridOptionsBuilder.from_dataframe(df2)
@@ -181,7 +178,7 @@ def addEducation(solitan):
     gd3.configure_auto_height(False)
     gridoptions3 = gd3.build()
     grid_response3 = AgGrid(df3, gridOptions=gridoptions3,
-                           update_mode=GridUpdateMode.SELECTION_CHANGED)
+                            update_mode=GridUpdateMode.SELECTION_CHANGED)
     df = grid_response3['data']
     for index, row in df3.iterrows():
         solitan.certifications[index].start_date = row['start_date']
@@ -215,7 +212,9 @@ def addLanguages(solitan):
 
 def addProfExper(solitan):
     st.subheader('Professional Experience')
-    df2 = pd.DataFrame([[w.start_date, w.end_date, w.job_title, w.company, w.job_description] for w in solitan.workExperience], columns=['start_date', 'end_date', 'job_title','company', 'job_description'])
+    df2 = pd.DataFrame(
+        [[w.start_date, w.end_date, w.job_title, w.company, w.job_description] for w in solitan.workExperience],
+        columns=['start_date', 'end_date', 'job_title', 'company', 'job_description'])
     # st.dataframe(data=df)
 
     gd2 = GridOptionsBuilder.from_dataframe(df2)
@@ -231,11 +230,13 @@ def addProfExper(solitan):
         solitan.workExperience[index].job_title = row['job_title']
         solitan.workExperience[index].company = row['company']
         solitan.workExperience[index].job_description = row['job_description']
-        #TODO
+        # TODO
         solitan.workExperience[index].client = "client"
 
     st.subheader('Projects')
-    df4 = pd.DataFrame([[p.start_date, p.end_date, p.client, p.project_title, p.project_description] for p in solitan.projects], columns=['start_date', 'end_date', 'client','project_title', 'project_description'])
+    df4 = pd.DataFrame(
+        [[p.start_date, p.end_date, p.client, p.project_title, p.project_description] for p in solitan.projects],
+        columns=['start_date', 'end_date', 'client', 'project_title', 'project_description'])
     # st.dataframe(data=df)
 
     gd4 = GridOptionsBuilder.from_dataframe(df4)
@@ -251,7 +252,6 @@ def addProfExper(solitan):
         solitan.projects[index].project_title = row['project_title']
         solitan.projects[index].clinet = row['client']
         solitan.projects[index].project_description = row['project_description']
-
 
 
 def addSkills(solitan):
