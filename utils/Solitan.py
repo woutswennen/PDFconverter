@@ -11,6 +11,7 @@ class Solitan:
         self.info = ""
         self.strengths = ""
         self.references = ""
+        self.availability = ""
 
         self.certifications = []
         self.workExperience = []
