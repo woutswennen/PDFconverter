@@ -16,20 +16,18 @@ keys = ['Company', 'Client', 'Period', 'Role', 'Tasks', 'Tools', 'Environment', 
 
 def addExTable(input_path, output_path, solitan):
     doc = Document(input_path)
-    experiences = solitan.workExperience
-    print(experiences)
 
     index = 0
-    for experience in experiences:
+    for project in solitan.projects:
         arg_dict = {}
-        arg_dict['Company'] = experience.company
-        arg_dict['Client'] = experience.client
-        arg_dict['Period'] = experience.start_date + ' - ' + "end_date"
-        arg_dict['Role'] = experience.role
-        arg_dict['Tasks'] = experience.tasks
-        arg_dict['Tools'] = experience.tools
-        arg_dict['Environment'] = experience.environment
-        arg_dict['Methodology'] = experience.methodology
+        arg_dict['Company'] = 'Solita'
+        arg_dict['Client'] = project.client
+        arg_dict['Period'] = project.start_date + ' - ' + "end_date"
+        arg_dict['Role'] = project.role
+        arg_dict['Tasks'] = project.tasks
+        arg_dict['Tools'] = project.tools
+        arg_dict['Environment'] = project.environment
+        arg_dict['Methodology'] = project.methodology
 
         experiences_dict[str(index)] = arg_dict
 

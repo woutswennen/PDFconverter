@@ -32,7 +32,7 @@ def main(solitan=solitan):
     if choice == "Upload":
         st.subheader("Upload the solita cv")
         cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
-        #solitan = Solitan()
+        solitan = Solitan()
         if cv_data is not None:
             st.subheader("Extracting data...")
             cvTransformer = CVTransformer(cv_data, solitan)
