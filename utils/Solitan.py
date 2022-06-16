@@ -1,22 +1,38 @@
 class Solitan:
     def __init__(self):
         self.name = ""
+        self.lastname = ""
         self.rol = ""
+        self.gender = ""
+        self.birthday = ""
+        self.nationality = ""
+        self.work_occupation = ""
+        self.fitness = ""  # TODO: This i'm not sure should be part of the Solitan object
         self.info = ""
         self.strengths = ""
+        self.references = ""
+        self.availability = ""
+
+        self.certifications = []
         self.workExperience = []
         self.education = []
         self.projects = []
+        self.languages = []
+        self.other_skills = []
+        self.man_skills = []
+        self.tech_skills = []
 
     def __str__(self):
         return f"""
-        Name = {self.name}
-        Rol = {self.rol}
-        Info = {self.info}
-        Strengths = {self.strengths}
-        Work workExperience = {self.workExperience}
-        Education {self.education}
-        Projects = {self.projects}"""
+        Name = {self.name}\n
+        Lasname = {self.lastname}\n
+        Rol = {self.rol}\n
+        Info = {self.info}\~
+        Strengths = {self.strengths}\n
+        Work workExperience = {self.workExperience}\n
+        Education =  {self.education}\n
+        Projects = {self.projects}\n
+        Certifications = {self.certifications}\n """
 
 
 class WorkExperience:
@@ -25,15 +41,16 @@ class WorkExperience:
         self.end_date = ""
         self.job_title = ""
         self.company = ""
+        self.client = ""
         self.job_description = ""
 
     def __repr__(self):
-        return f"""
+        return f"""\n
         Job Title = {self.job_title}
         Company = {self.company}
         Start date = {self.start_date}
         End date = {self.end_date}
-        Job Description = {self.job_description}"""
+        Job Description = {self.job_description}\n"""
 
 
 class Education:
@@ -44,11 +61,11 @@ class Education:
         self.education_description = ""
 
     def __repr__(self):
-        return f"""
+        return f"""\n
         Title = {self.title}
         Institution= {self.institution}
         End date = {self.end_date}
-        Education Description = {self.education_description}"""
+        Education Description = {self.education_description}\n"""
 
 
 class Project:
@@ -56,13 +73,33 @@ class Project:
         self.start_date = ""
         self.end_date = ""
         self.client = ""
-        self.project_title = ""
-        self.project_description = ""
+        self.role = ""
+        self.tasks = ""
+        self.tools = ""
+        self.environment = ""
+        self.methodology = ""
 
     def __repr__(self):
-        return f"""
-        Title = {self.project_title}
+        return f"""\n
+        Role = {self.role}
         Client = {self.client}
         Start date = {self.start_date}
         End date = {self.end_date}
-        Project Description = {self.project_description}"""
+        Tasks = {self.tasks}\n"""
+
+
+class Certification:
+    def __init__(self):
+        self.start_date = ""
+        self.end_date = ""
+        self.cert_title = ""
+        self.technology = ""
+        self.reference = ""
+
+    def __repr__(self):
+        return f"""\n
+        Certification : {self.cert_title}
+        Start date = {self.start_date}
+        End date = {self.end_date}
+        Technology = {self.technology}
+        Reference = {self.reference}\n"""

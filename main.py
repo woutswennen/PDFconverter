@@ -23,7 +23,8 @@ for filename in os.listdir(directory):
         cv = re.sub("^[a-zA-Z0-9]*$", '', cv)
 
         # Split the document in the different sections
-        cvTransformer = CVTransformer(cv)
+        solitan = Solitan()
+        cvTransformer = CVTransformer(cv, solitan)
         cvTransformer.get_sections()
         cvTransformer.get_personal_info()
         cvTransformer.get_work_experience()
