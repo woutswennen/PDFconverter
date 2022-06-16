@@ -66,9 +66,14 @@ class CVTransformer:
                 break
             for ent in doc.ents:
                 if ent.label_ == "PERSON" or ent.label_ == "ORG":
-                    self.solitan.name, self.solitan.lastname = cv_in_lines[i].split(' ', 1)
-                    self.solitan.rol = cv_in_lines[i + 1]
+                    name = cv_in_lines[i].split(' ', 1)
+                    if len(name) > 1:
+                        self.solitan.name, self.solitan.lastname = name
+                        self.solitan.rol = cv_in_lines[i + 1]
+                    else:
+                        self.solitan.name = name[0]
                     break
+
 
     def get_work_experience(self):
         doc = self.nlp(self.cv_in_sections['Work history'])
@@ -129,8 +134,8 @@ class CVTransformer:
                 span_project_description = doc[end:date_matches[i + 1][1]].text.splitlines()
             else:
                 span_project_description = doc[end::].text.splitlines()
-            project.project_title, project.client = span_project_description.pop(0).strip(' —.').split(',', 1)
-            project.project_description = " ".join(span_project_description)
+            project.role, project.client = span_project_description.pop(0).strip(' —.').split(',', 1)
+            project.tasks = " ".join(span_project_description)
             self.solitan.projects.append(project)
 
     def get_certificates(self):

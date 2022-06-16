@@ -29,10 +29,9 @@ def main(solitan=solitan):
     if choice == "Upload":
         st.subheader("Upload the solita cv")
         cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
-
+        #solitan = Solitan()
         if cv_data is not None:
             st.subheader("Extracting data...")
-            # solitan = Solitan()
             cvTransformer = CVTransformer(cv_data, solitan)
             cvTransformer.prepare_and_extract()
             st.write(solitan)
@@ -223,8 +222,8 @@ def addProfExper(solitan):
 
     st.subheader('Projects')
     df4 = pd.DataFrame(
-        [[p.start_date, p.end_date, p.client, p.project_title, p.project_description] for p in solitan.projects],
-        columns=['start_date', 'end_date', 'client', 'project_title', 'project_description'])
+        [[p.start_date, p.end_date, p.client, p.role, p.tasks] for p in solitan.projects],
+        columns=['start_date', 'end_date', 'client', 'role', 'tasks'])
     # st.dataframe(data=df)
 
     gd4 = GridOptionsBuilder.from_dataframe(df4)
@@ -233,13 +232,13 @@ def addProfExper(solitan):
     gridoptions4 = gd4.build()
     grid_response4 = AgGrid(df4, gridOptions=gridoptions4, update_mode=GridUpdateMode.SELECTION_CHANGED)
 
-    df = grid_response4['data']
+    df4 = grid_response4['data']
     for index, row in df4.iterrows():
         solitan.projects[index].start_date = row['start_date']
         solitan.projects[index].end_date = row['end_date']
-        solitan.projects[index].project_title = row['project_title']
-        solitan.projects[index].clinet = row['client']
-        solitan.projects[index].project_description = row['project_description']
+        solitan.projects[index].role = row['role']
+        solitan.projects[index].client = row['client']
+        solitan.projects[index].tasks = row['tasks']
 
 
 def addSkills(solitan):

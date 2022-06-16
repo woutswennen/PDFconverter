@@ -72,16 +72,19 @@ class Project:
         self.start_date = ""
         self.end_date = ""
         self.client = ""
-        self.project_title = ""
-        self.project_description = ""
+        self.role = ""
+        self.tasks = ""
+        self.tools = ""
+        self.environment = ""
+        self.methodology = ""
 
     def __repr__(self):
         return f"""\n
-        Title = {self.project_title}
+        Role = {self.role}
         Client = {self.client}
         Start date = {self.start_date}
         End date = {self.end_date}
-        Project Description = {self.project_description}\n"""
+        Tasks = {self.tasks}\n"""
 
 
 class Certification:
