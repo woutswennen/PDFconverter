@@ -68,18 +68,18 @@ def main(solitan=solitan):
         save_uploadedfile(uploadedfiles)
 
         st.subheader("All templates")
-        for file in os.listdir('assets/Templates'):
+        for file in os.listdir('assets/templates'):
             st.write(file)
             st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
 
 def save_uploadedfile(uploadedfile):
-    with open(os.path.join("assets/Templates", uploadedfile.name), "wb") as f:
+    with open(os.path.join("assets/templates", uploadedfile.name), "wb") as f:
         print(uploadedfile.getbuffer())
         f.write(uploadedfile.getbuffer())
-        return st.success("Saved File:{} to assets/Templates".format(uploadedfile.name))
+        return st.success("Saved File:{} to assets/templates".format(uploadedfile.name))
 
 def removeTemplateFile(filename):
-    os.remove('assets/Templates/' + filename)
+    os.remove('assets/templates/' + filename)
 
 
 
@@ -100,9 +100,9 @@ def create_form(solitan):
 
         addSkills(solitan)
 
-        input_path = 'assets/Templates/cv_template.docx'
-        inbetween_path = 'assets/semi_filled_template.docx'
-        output_path = 'assets/filled_template.docx'
+        input_path = 'assets/templates/cv_template.docx'
+        inbetween_path = 'assets/templates/semi_filled_template.docx'
+        output_path = 'assets/templates/filled_template.docx'
 
         if st.form_submit_button("Render"):
 
