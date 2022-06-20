@@ -22,7 +22,7 @@ def addExTable(input_path, output_path, solitan):
         arg_dict = {}
         arg_dict['Company'] = 'Solita'
         arg_dict['Client'] = project.client
-        arg_dict['Period'] = project.start_date + ' - ' + "end_date"
+        arg_dict['Period'] = project.start_date + ' - ' + project.end_date
         arg_dict['Role'] = project.role
         arg_dict['Tasks'] = project.tasks
         arg_dict['Tools'] = project.tools
@@ -37,6 +37,7 @@ def addExTable(input_path, output_path, solitan):
 
     fillExTable(doc, tableindex_ex, rowindex_ex, experiences_dict)
     doc.save(output_path)
+
 
 
 

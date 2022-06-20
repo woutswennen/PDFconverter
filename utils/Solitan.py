@@ -7,7 +7,7 @@ class Solitan:
         self.birthday = ""
         self.nationality = ""
         self.work_occupation = ""
-        self.fitness = ""  # TODO: This i'm not sure should be part of the Solitan object
+        self.fitness = ""
         self.info = ""
         self.strengths = ""
         self.references = ""

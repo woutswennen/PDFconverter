@@ -3,6 +3,7 @@
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 import os
 import random
+from docx import Document
 
 import streamlit as st
 import pandas as pd
@@ -99,14 +100,23 @@ def create_form(solitan):
 
         addSkills(solitan)
 
-        if st.form_submit_button("Download"):
+        input_path = 'assets/Templates/cv_template.docx'
+        inbetween_path = 'assets/semi_filled_template.docx'
+        output_path = 'assets/filled_template.docx'
 
-            input_path = 'assets/Templates/cv_template.docx'
-            inbetween_path = 'assets/semi_filled_template.docx'
-            output_path = 'assets/filled_template.docx'
+        if st.form_submit_button("Render"):
+
+
 
             addExTable(input_path, inbetween_path, solitan)
             fill.argenta(inbetween_path, output_path, solitan)
+
+
+    result_doc = open(output_path, 'rb')
+    st.download_button('Download', result_doc, file_name='cv.docx')
+    result_doc.close()
+
+
 
 
 def addPersonal(solitan):
