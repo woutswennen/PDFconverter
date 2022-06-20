@@ -16,6 +16,7 @@ for filename in os.listdir(directory):
     f = os.path.join(directory, filename)
     # checking if it is a file
     if os.path.isfile(f) and f.endswith('.pdf'):
+        solitan = Solitan()
         # Clean the PDF's text from empty lines and reconstruct splitted words
         cv = parser.from_file(f)['content']
         cv = re.sub('\n+', '\n', cv)
@@ -23,7 +24,6 @@ for filename in os.listdir(directory):
         cv = re.sub("^[a-zA-Z0-9]*$", '', cv)
 
         # Split the document in the different sections
-        solitan = Solitan()
         cvTransformer = CVTransformer(cv, solitan)
         cvTransformer.get_sections()
         cvTransformer.get_personal_info()

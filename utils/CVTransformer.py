@@ -20,8 +20,8 @@ class CVTransformer:
         pattern1 = [{"TEXT": {"REGEX": '^[0-9]{2}/[0-9]{4}—[0-9]{2}/[0-9]{4}$'}}]
         pattern2 = [{"TEXT": {"REGEX": '^[0-9]{2}/[0-9]{4}$'}}]
         pattern3 = [{"TEXT": {"REGEX": '^[0-9]{2}/[0-9]{4}$'}},
-                    {"TEXT": {"REGEX": '( |—)'}},
-                    {"TEXT": {"REGEX": '[A-z]$'}}]
+                    {"TEXT": {"REGEX": '—'}},
+                    {"LOWER": 'present'}]
         pattern4 = [{"TEXT": {"REGEX": '^[0-9]{4}$'}}]
 
         pattern_lower = [{"TEXT": {"REGEX": '[A-Z]*[a-z]+'}}]
@@ -73,7 +73,6 @@ class CVTransformer:
                     else:
                         self.solitan.name = name[0]
                     break
-
 
     def get_work_experience(self):
         doc = self.nlp(self.cv_in_sections['Work history'])

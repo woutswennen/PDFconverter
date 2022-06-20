@@ -15,61 +15,17 @@ import utils.fillTemplate as fill
 from utils.CVTransformer import CVTransformer
 from utils.Solitan import Solitan
 from utils.Output import addExTable
-
+from streamlit import caching
 
 @st.cache(allow_output_mutation=True)
 def create_solitan_profile():
     return Solitan()
 
 
+menu = ["Upload", "Edit", "Download", "Upload template"]
+choice = st.sidebar.selectbox("Upload", menu)
+
 solitan = create_solitan_profile()
-
-
-def main(solitan=solitan):
-    menu = ["Upload", "Edit", "Download", "Upload template"]
-    choice = st.sidebar.selectbox("Upload", menu)
-
-    if choice == "Upload":
-        st.subheader("Upload the solita cv")
-        cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
-        #solitan = Solitan()
-        if cv_data is not None:
-            st.subheader("Extracting data...")
-            cvTransformer = CVTransformer(cv_data, solitan)
-            cvTransformer.prepare_and_extract()
-            st.write(solitan)
-
-
-    elif choice == "Edit":
-        create_form(solitan)
-        st.write(solitan)  # TODO: to delete when complited
-        # with st.form(key="form1"):
-        #     firstname = st.text_input("Firstname")
-        #     submit = st.form_submit_button("Submit")
-        #     with st.sidebar:
-        #         with st.spinner("loading"):
-        #             time.sleep(5)
-        #         st.success("Done")
-
-
-    elif choice == "Download":
-        st.subheader("Download the new pdf")
-
-
-    elif choice == "Upload template":
-
-
-
-
-        st.title("idk")
-        uploadedfiles = st.file_uploader("upload file")
-
-        save_uploadedfile(uploadedfiles)
-
-        st.subheader("All templates")
-        for file in os.listdir('assets/Templates'):
-            st.write(file)
-            st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
 
 def save_uploadedfile(uploadedfile):
     with open(os.path.join("assets/Templates", uploadedfile.name), "wb") as f:
@@ -272,14 +228,34 @@ def addProfExper(solitan):
 
 def addSkills(solitan):
     solitan.man_skills = st.text_area('Management Skills', value=solitan.man_skills)
-
     solitan.tech_skills = st.text_area('Technical Skills', value=solitan.tech_skills)
-
     solitan.other_skills = st.text_area('Others', value=solitan.other_skills)
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    main()
+if choice == "Upload":
+    st.subheader("Upload the solita cv")
+    cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
+    if cv_data is not None:
+        st.legacy_caching.clear_cache()
+        solitan = create_solitan_profile()
+        st.subheader("Extracting data...")
+        cvTransformer = CVTransformer(cv_data, solitan)
+        solitan = cvTransformer.prepare_and_extract()
+        st.write(solitan)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+elif choice == "Edit":
+    create_form(solitan)
+
+elif choice == "Download":
+    st.subheader("Download the new pdf")
+
+elif choice == "Upload template":
+    st.title("idk")
+    uploadedfiles = st.file_uploader("upload file")
+
+    save_uploadedfile(uploadedfiles)
+
+    st.subheader("All templates")
+    for file in os.listdir('assets/Templates'):
+        st.write(file)
+        st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
