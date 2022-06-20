@@ -214,26 +214,24 @@ def addEducation(solitan):
 
 
 def addLanguages(solitan):
-    lang = {'french': {}, 'dutch': {}, 'englsih': {}}
-    lang = {'french': {}, 'dutch': {}, 'englsih': {}}
+
     st.subheader("Languages")
     scale = ['native', 'fluent', 'good', 'basic']
-    fra, dut, eng = st.columns(3)
+    spoken, written, compre = st.columns(3)
     # TODO: I think this should iterate into the languages of the solitan
-    with fra:
-        lang['french']['spoken'] = st.selectbox('French spoken', scale)
-        lang['french']['spoken'] = st.selectbox('Dutch spoken', scale)
-        lang['french']['spoken'] = st.selectbox('English spoken', scale)
-    with dut:
-        lang['french']['spoken'] = st.selectbox('French writen', scale)
-        lang['french']['spoken'] = st.selectbox('Dutch writen', scale)
-        lang['french']['spoken'] = st.selectbox('English writen', scale)
-    with eng:
-        lang['french']['spoken'] = st.selectbox('French comprehension', scale)
-        lang['french']['spoken'] = st.selectbox('Dutch comprehension', scale)
-        lang['french']['spoken'] = st.selectbox('English comprehension', scale)
+    with spoken:
+        solitan.french_spoken = st.selectbox('French spoken', scale)
+        solitan.dutch_spoken = st.selectbox('Dutch spoken', scale)
+        solitan.english_spoken = st.selectbox('English spoken', scale)
+    with written:
+        solitan.french_written = st.selectbox('French writen', scale)
+        solitan.dutch_written = st.selectbox('Dutch writen', scale)
+        solitan.english_written = st.selectbox('English writen', scale)
+    with compre:
+        solitan.french_comprehension = st.selectbox('French comprehension', scale)
+        solitan.dutch_comprehension = st.selectbox('Dutch comprehension', scale)
+        solitan.english_comprehension = st.selectbox('English comprehension', scale)
 
-    solitan.languages = lang
 
 
 def addProfExper(solitan):
