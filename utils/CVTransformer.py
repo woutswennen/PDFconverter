@@ -2,7 +2,7 @@ import re
 import spacy
 from spacy.matcher import Matcher
 
-from utils.Solitan import Solitan, WorkExperience, Education, Project, Certification
+from utils.Solitan import Solitan, WorkExperience, Education, Project, Certification, Skill
 from tika import parser
 
 
@@ -43,6 +43,7 @@ class CVTransformer:
         self.get_education()
         self.get_projects()
         self.get_certificates()
+        self.get_skills()
 
         return self.solitan
 
@@ -158,6 +159,33 @@ class CVTransformer:
             certification.cert_title, certification.technology = span_cert_title.split(',')
             self.solitan.certifications.append(certification)
             print(self.solitan.certifications)
+
+    def get_skills(self):
+        doc = self.nlp(self.cv_in_sections['Skills'])
+
+        pattern = [{"TEXT": {"REGEX": '[0-9]*'}},
+                   {"LOWER": 'year'}]
+
+        self.matcher_dates.remove('Date')
+        self.matcher_dates.add('DATE', [pattern])
+        matches = self.matcher_dates(self.nlp(" ".join([token.lemma_ for token in doc])))
+
+        for i in range(0, len(matches)):
+            match_id, start, end = matches[i]
+            if i > 1:
+                span_date = doc[start: end].text
+                span_tech = doc[matches[i - 1][2] + 1:start - 1]
+                span_level = doc[start - 1]
+            else:
+                span_date = doc[start: end].text
+                span_tech = doc[0:start - 1]
+                span_level = doc[start - 1]
+
+            skill = Skill()
+            skill.skill = span_tech
+            skill.level = span_level
+            skill.year_exp = span_date
+            self.solitan.tech_skills.append(skill)
 
     @staticmethod
     def filter_matches_by_longest_string(matches):

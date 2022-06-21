@@ -228,7 +228,25 @@ def addProfExper(solitan):
 
 def addSkills(solitan):
     solitan.man_skills = st.text_area('Management Skills', value=solitan.man_skills)
-    solitan.tech_skills = st.text_area('Technical Skills', value=solitan.tech_skills)
+    #solitan.tech_skills = st.text_area('Technical Skills', value=solitan.tech_skills)
+    st.write('Technical Skills')
+    df = pd.DataFrame(
+        [[s.skill, s.level, s.year_exp] for s in solitan.tech_skills],
+        columns=['skill','level','years_experience'])
+    # st.dataframe(data=df)
+
+    gd = GridOptionsBuilder.from_dataframe(df)
+    gd.configure_default_column(editable=True)
+    gd.configure_auto_height(False)
+    gridoptions = gd.build()
+    grid_response = AgGrid(df, gridOptions=gridoptions,
+                           update_mode=GridUpdateMode.SELECTION_CHANGED)
+    df = grid_response['data']
+    for index, row in df.iterrows():
+        solitan.tech_skills[index].skill = row['skill']
+        solitan.tech_skills[index].level = row['level']
+        solitan.tech_skills[index].year_exp = row['years_experience']
+
     solitan.other_skills = st.text_area('Others', value=solitan.other_skills)
 
 
