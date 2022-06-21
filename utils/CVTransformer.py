@@ -1,7 +1,7 @@
 import re
 import spacy
 from spacy.matcher import Matcher
-
+import ToolsMatcher
 from utils.Solitan import Solitan, WorkExperience, Education, Project, Certification
 from tika import parser
 
@@ -136,7 +136,24 @@ class CVTransformer:
                 span_project_description = doc[end::].text.splitlines()
             project.role, project.client = span_project_description.pop(0).strip(' —.').split(',', 1)
             project.tasks = " ".join(span_project_description)
+            #check methodologies in tasks
+            if 'scrum' in project.tasks.lower():
+                project.methodologies.append('Scrum')
+            if 'devops' in project.tasks.lower():
+                project.methodologies.append('DevOps')
+            if 'agile' in project.tasks.lower():
+                project.methodologies.append('Agile')
+            if 'waterfall' in project.tasks.lower():
+                project.methodologies.append('Waterfall')
+            print("project x")
+            print(project.tasks)
+
+            # #check tools in tasks
+            project.tools = ToolsMatcher.getProjectTools(project.tasks)
+            #add new project object to projects list
             self.solitan.projects.append(project)
+        print("result tools")
+        print(self.solitan.projects[0].tools)
 
     def get_certificates(self):
         doc = self.nlp(self.cv_in_sections['Certificates'])
@@ -159,6 +176,8 @@ class CVTransformer:
             certification.cert_title, certification.technology = span_cert_title.split(',')
             self.solitan.certifications.append(certification)
             print(self.solitan.certifications)
+
+
 
     @staticmethod
     def filter_matches_by_longest_string(matches):

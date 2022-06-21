@@ -259,8 +259,8 @@ def addProfExper(solitan):
 
     st.subheader('Projects')
     df4 = pd.DataFrame(
-        [[p.start_date, p.end_date, p.client, p.role, p.tasks] for p in solitan.projects],
-        columns=['start_date', 'end_date', 'client', 'role', 'tasks'])
+        [[p.start_date, p.end_date, p.client, p.role, p.tasks, p.methodologies] for p in solitan.projects],
+        columns=['start_date', 'end_date', 'client', 'role', 'tasks', 'methodologies'])
     # st.dataframe(data=df)
 
     gd4 = GridOptionsBuilder.from_dataframe(df4)

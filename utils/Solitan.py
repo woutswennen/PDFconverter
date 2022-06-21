@@ -75,9 +75,9 @@ class Project:
         self.client = ""
         self.role = ""
         self.tasks = ""
-        self.tools = ""
+        self.tools = []
         self.environment = ""
-        self.methodology = ""
+        self.methodologies = []
 
     def __repr__(self):
         return f"""\n
