@@ -112,7 +112,4 @@ class Skill:
         years_exp = ""
 
     def __repr__(self):
-        return f"""\n
-        Skill : {self.skill}
-        Level = {self.level}
-        Years of experience = {self.year_exp}\n"""
+        return f"""\n{self.skill}, {self.level}, {self.year_exp}.\n"""

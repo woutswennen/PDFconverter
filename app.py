@@ -228,7 +228,6 @@ def addProfExper(solitan):
 
 def addSkills(solitan):
     solitan.man_skills = st.text_area('Management Skills', value=solitan.man_skills)
-    #solitan.tech_skills = st.text_area('Technical Skills', value=solitan.tech_skills)
     st.write('Technical Skills')
     df = pd.DataFrame(
         [[s.skill, s.level, s.year_exp] for s in solitan.tech_skills],

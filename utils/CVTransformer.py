@@ -32,9 +32,9 @@ class CVTransformer:
     def prepare_and_extract(self):
 
         self.cv = parser.from_file(self.cv)['content']
-        self.cv = re.sub('\n+', '\n', self.cv)
-        self.cv = re.sub('-\n+', '', self.cv)
+        self.cv = re.sub('-\n+|\ue210', '', self.cv)
         self.cv = re.sub("^[a-zA-Z0-9]*$", '', self.cv)
+        self.cv = re.sub('\n+', '\n', self.cv)
 
         # Split the document in the different sections
         self.get_sections()
@@ -44,7 +44,6 @@ class CVTransformer:
         self.get_projects()
         self.get_certificates()
         self.get_skills()
-
         return self.solitan
 
     def get_sections(self):
@@ -186,6 +185,9 @@ class CVTransformer:
             skill.level = span_level
             skill.year_exp = span_date
             self.solitan.tech_skills.append(skill)
+
+        self.solitan.man_skills = self.cv_in_sections['Strengths'].splitlines()
+
 
     @staticmethod
     def filter_matches_by_longest_string(matches):
