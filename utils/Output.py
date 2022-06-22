@@ -27,7 +27,7 @@ def addExTable(input_path, output_path, solitan):
         arg_dict['Tasks'] = project.tasks
         arg_dict['Tools'] = project.tools
         arg_dict['Environment'] = project.environment
-        arg_dict['Methodology'] = project.methodology
+        arg_dict['Methodology'] = project.methodologies
 
         experiences_dict[str(index)] = arg_dict
 

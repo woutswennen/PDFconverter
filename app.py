@@ -10,38 +10,37 @@ import datetime
 from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
-from utils import ToolsMatcher
 import utils.fillTemplate as fill
 from utils.CVTransformer import CVTransformer
 from utils.Solitan import Solitan
 from utils.Output import addExTable
+from utils.ToolsMatcher import ToolsMatcher
 
 
 @st.cache(allow_output_mutation=True)
-def create_solitan_profile():
-    return Solitan()
+def create_CVTransformer():
+    return CVTransformer()
 
 
-solitan = create_solitan_profile()
+cvTransformer = create_CVTransformer()
 
 
-
-def main(solitan=solitan):
+def main(cvTransformer=cvTransformer):
     menu = ["Upload", "Edit", "Download", "Upload template"]
     choice = st.sidebar.selectbox("Upload", menu)
 
     if choice == "Upload":
         st.subheader("Upload the solita cv")
         cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
-        #solitan = Solitan()
+        # solitan = Solitan()
         if cv_data is not None:
             st.subheader("Extracting data...")
-            cvTransformer = CVTransformer(cv_data, solitan)
-            cvTransformer.prepare_and_extract()
-            st.write(solitan)
+            cvTransformer.prepare_and_extract(cv_data)
+            st.write(cvTransformer.solitan)
 
 
     elif choice == "Edit":
+        solitan = cvTransformer.solitan
         create_form(solitan)
         st.write(solitan)  # TODO: to delete when complited
         # with st.form(key="form1"):
@@ -59,9 +58,6 @@ def main(solitan=solitan):
 
     elif choice == "Upload template":
 
-
-
-
         st.title("idk")
         uploadedfiles = st.file_uploader("upload file")
 
@@ -72,16 +68,16 @@ def main(solitan=solitan):
             st.write(file)
             st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
 
+
 def save_uploadedfile(uploadedfile):
     with open(os.path.join("assets/templates", uploadedfile.name), "wb") as f:
         print(uploadedfile.getbuffer())
         f.write(uploadedfile.getbuffer())
         return st.success("Saved File:{} to assets/templates".format(uploadedfile.name))
 
+
 def removeTemplateFile(filename):
     os.remove('assets/templates/' + filename)
-
-
 
 
 def create_form(solitan):
@@ -105,34 +101,29 @@ def create_form(solitan):
         output_path = 'assets/templates/filled_template.docx'
 
         if st.form_submit_button("Render"):
-
-
-
             addExTable(input_path, inbetween_path, solitan)
             fill.argenta(inbetween_path, output_path, solitan)
-
 
     result_doc = open(output_path, 'rb')
     st.download_button('Download', result_doc, file_name='cv.docx', on_click=final(solitan))
     result_doc.close()
 
+
 def final(solitan):
     print("button click")
-    #list of all the project's tools thats going to render in the word doc
+    # list of all the project's tools thats going to render in the word doc
     all_tools = []
     for project in solitan.projects:
         print(project.tools)
         for tool in project.tools:
             all_tools.append(tool)
-    found_tools = ToolsMatcher.last_found_tools
+    found_tools = cvTransformer.last_found_tools
 
     for tool in all_tools:
         if tool not in found_tools:
             print("add tool to csv file: " + tool)
 
     print("reloading cvs file")
-
-
 
 
 def addPersonal(solitan):
@@ -229,7 +220,6 @@ def addEducation(solitan):
 
 
 def addLanguages(solitan):
-
     st.subheader("Languages")
     scale = ['native', 'fluent', 'good', 'basic']
     spoken, written, compre = st.columns(3)
@@ -246,7 +236,6 @@ def addLanguages(solitan):
         solitan.french_comprehension = st.selectbox('French comprehension', scale)
         solitan.dutch_comprehension = st.selectbox('Dutch comprehension', scale)
         solitan.english_comprehension = st.selectbox('English comprehension', scale)
-
 
 
 def addProfExper(solitan):
