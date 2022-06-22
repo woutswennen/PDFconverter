@@ -1,8 +1,8 @@
 import re
 import spacy
 from spacy.matcher import Matcher
-import ToolsMatcher
-from utils.Solitan import Solitan, WorkExperience, Education, Project, Certification
+from utils import ToolsMatcher
+from utils.Solitan import WorkExperience, Education, Project, Certification
 from tika import parser
 
 

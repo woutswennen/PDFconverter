@@ -3,7 +3,6 @@
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 import os
 import random
-from docx import Document
 
 import streamlit as st
 import pandas as pd
@@ -11,7 +10,7 @@ import datetime
 from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
-from utils.Output import addExTable
+from utils import ToolsMatcher
 import utils.fillTemplate as fill
 from utils.CVTransformer import CVTransformer
 from utils.Solitan import Solitan
@@ -24,6 +23,7 @@ def create_solitan_profile():
 
 
 solitan = create_solitan_profile()
+
 
 
 def main(solitan=solitan):
@@ -113,8 +113,24 @@ def create_form(solitan):
 
 
     result_doc = open(output_path, 'rb')
-    st.download_button('Download', result_doc, file_name='cv.docx')
+    st.download_button('Download', result_doc, file_name='cv.docx', on_click=final(solitan))
     result_doc.close()
+
+def final(solitan):
+    print("button click")
+    #list of all the project's tools thats going to render in the word doc
+    all_tools = []
+    for project in solitan.projects:
+        print(project.tools)
+        for tool in project.tools:
+            all_tools.append(tool)
+    found_tools = ToolsMatcher.last_found_tools
+
+    for tool in all_tools:
+        if tool not in found_tools:
+            print("add tool to csv file: " + tool)
+
+    print("reloading cvs file")
 
 
 
@@ -197,7 +213,6 @@ def addEducation(solitan):
         [[c.start_date, c.end_date, c.cert_title, c.technology] for c in solitan.certifications],
         columns=['start_date', 'end_date', 'cert_title', 'technology'])
     # st.dataframe(data=df)
-    print(df3)
 
     gd3 = GridOptionsBuilder.from_dataframe(df3)
     gd3.configure_default_column(editable=True)
@@ -259,8 +274,8 @@ def addProfExper(solitan):
 
     st.subheader('Projects')
     df4 = pd.DataFrame(
-        [[p.start_date, p.end_date, p.client, p.role, p.tasks, p.methodologies] for p in solitan.projects],
-        columns=['start_date', 'end_date', 'client', 'role', 'tasks', 'methodologies'])
+        [[p.start_date, p.end_date, p.client, p.role, p.tasks, p.methodologies, p.tools] for p in solitan.projects],
+        columns=['start_date', 'end_date', 'client', 'role', 'tasks', 'methodologies', 'tools'])
     # st.dataframe(data=df)
 
     gd4 = GridOptionsBuilder.from_dataframe(df4)
@@ -276,6 +291,7 @@ def addProfExper(solitan):
         solitan.projects[index].role = row['role']
         solitan.projects[index].client = row['client']
         solitan.projects[index].tasks = row['tasks']
+        solitan.projects[index].tools = row['tools']
 
 
 def addSkills(solitan):
