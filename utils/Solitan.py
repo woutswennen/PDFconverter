@@ -103,3 +103,13 @@ class Certification:
         End date = {self.end_date}
         Technology = {self.technology}
         Reference = {self.reference}\n"""
+
+
+class Skill:
+    def __init__(self):
+        skill = ""
+        level = ""
+        years_exp = ""
+
+    def __repr__(self):
+        return f"""\n{self.skill}, {self.level}, {self.year_exp}.\n"""

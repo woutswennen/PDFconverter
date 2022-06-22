@@ -1,7 +1,7 @@
 import re
 import spacy
 from spacy.matcher import Matcher, PhraseMatcher
-from utils.Solitan import WorkExperience, Education, Project, Certification, Solitan
+from utils.Solitan import Solitan, WorkExperience, Education, Project, Certification, Skill
 from tika import parser
 import pandas as pd
 import csv
@@ -21,8 +21,8 @@ class CVTransformer:
         pattern1 = [{"TEXT": {"REGEX": '^[0-9]{2}/[0-9]{4}—[0-9]{2}/[0-9]{4}$'}}]
         pattern2 = [{"TEXT": {"REGEX": '^[0-9]{2}/[0-9]{4}$'}}]
         pattern3 = [{"TEXT": {"REGEX": '^[0-9]{2}/[0-9]{4}$'}},
-                    {"TEXT": {"REGEX": '( |—)'}},
-                    {"TEXT": {"REGEX": '[A-z]$'}}]
+                    {"TEXT": {"REGEX": '—'}},
+                    {"LOWER": 'present'}]
         pattern4 = [{"TEXT": {"REGEX": '^[0-9]{4}$'}}]
 
         pattern_lower = [{"TEXT": {"REGEX": '[A-Z]*[a-z]+'}}]
@@ -37,11 +37,10 @@ class CVTransformer:
         self.add_big()
 
     def prepare_and_extract(self, cv):
-
-        self.cv = parser.from_file(cv)['content']
-        self.cv = re.sub('\n+', '\n', self.cv)
-        self.cv = re.sub('-\n+', '', self.cv)
+        self.cv = parser.from_file(self.cv)['content']
+        self.cv = re.sub('-\n+|\ue210', '', self.cv)
         self.cv = re.sub("^[a-zA-Z0-9]*$", '', self.cv)
+        self.cv = re.sub('\n+', '\n', self.cv)
 
         # Split the document in the different sections
         self.get_sections()
@@ -50,7 +49,7 @@ class CVTransformer:
         self.get_education()
         self.get_projects()
         self.get_certificates()
-
+        self.get_skills()
         return self.solitan
 
     def get_sections(self):
@@ -80,7 +79,6 @@ class CVTransformer:
                     else:
                         self.solitan.name = name[0]
                     break
-
 
     def get_work_experience(self):
         doc = self.nlp(self.cv_in_sections['Work history'])
@@ -152,15 +150,12 @@ class CVTransformer:
                 project.methodologies.append('Agile')
             if 'waterfall' in project.tasks.lower():
                 project.methodologies.append('Waterfall')
-            print("project x")
-            print(project.tasks)
 
             # #check tools in tasks
             project.tools = self.getProjectTools(project.tasks)
             #add new project object to projects list
             self.solitan.projects.append(project)
-        print("result tools")
-        print(self.solitan.projects[0].tools)
+
 
     def get_certificates(self):
         doc = self.nlp(self.cv_in_sections['Certificates'])
@@ -183,6 +178,45 @@ class CVTransformer:
             certification.cert_title, certification.technology = span_cert_title.split(',')
             self.solitan.certifications.append(certification)
             print(self.solitan.certifications)
+
+    def get_skills(self):
+        doc = self.nlp(self.cv_in_sections['Skills'])
+
+        pattern = [{"TEXT": {"REGEX": '[0-9]*'}},
+                   {"LOWER": 'year'}]
+
+        self.matcher_dates.remove('Date')
+        self.matcher_dates.add('DATE', [pattern])
+        matches = self.matcher_dates(self.nlp(" ".join([token.lemma_ for token in doc])))
+
+        for i in range(0, len(matches)):
+            match_id, start, end = matches[i]
+            if i > 1:
+                span_date = doc[start: end].text
+                span_tech = doc[matches[i - 1][2] + 1:start - 1]
+                span_level = doc[start - 1]
+            else:
+                span_date = doc[start: end].text
+                span_tech = doc[0:start - 1]
+                span_level = doc[start - 1]
+
+            skill = Skill()
+            skill.skill = span_tech
+            skill.level = span_level
+            skill.year_exp = span_date
+            self.solitan.tech_skills.append(skill)
+
+        self.solitan.man_skills = self.cv_in_sections['Strengths'].splitlines()
+
+    @staticmethod
+    def filter_matches_by_longest_string(matches):
+        filtered_matches = []
+        for i in range(0, len(matches) - 1):
+            match_id, start, end = matches[i]
+            if not start >= matches[i + 1][1] and end <= matches[i + 1][2]:
+                filtered_matches.append(matches[i])
+        filtered_matches.append(matches[-1])
+        return filtered_matches
 
     def add_small(self):
         # open small csv and add tools to list
