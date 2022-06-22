@@ -7,7 +7,7 @@ class Solitan:
         self.birthday = ""
         self.nationality = ""
         self.work_occupation = ""
-        self.fitness = ""  # TODO: This i'm not sure should be part of the Solitan object
+        self.fitness = ""
         self.info = ""
         self.strengths = ""
         self.references = ""
@@ -75,9 +75,9 @@ class Project:
         self.client = ""
         self.role = ""
         self.tasks = ""
-        self.tools = ""
+        self.tools = []
         self.environment = ""
-        self.methodology = ""
+        self.methodologies = []
 
     def __repr__(self):
         return f"""\n
@@ -103,3 +103,13 @@ class Certification:
         End date = {self.end_date}
         Technology = {self.technology}
         Reference = {self.reference}\n"""
+
+
+class Skill:
+    def __init__(self):
+        skill = ""
+        level = ""
+        years_exp = ""
+
+    def __repr__(self):
+        return f"""\n{self.skill}, {self.level}, {self.year_exp}.\n"""

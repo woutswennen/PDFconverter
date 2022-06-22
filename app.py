@@ -15,28 +15,68 @@ import utils.fillTemplate as fill
 from utils.CVTransformer import CVTransformer
 from utils.Solitan import Solitan
 from utils.Output import addExTable
-from streamlit import caching
+
 
 @st.cache(allow_output_mutation=True)
-def create_solitan_profile():
-    return Solitan()
+def create_CVTransformer():
+    return CVTransformer()
 
 
-menu = ["Upload", "Edit", "Download", "Upload template"]
-choice = st.sidebar.selectbox("Upload", menu)
+cvTransformer = create_CVTransformer()
 
-solitan = create_solitan_profile()
+
+def main(cvTransformer=cvTransformer):
+    menu = ["Upload", "Edit", "Download", "Upload template"]
+    choice = st.sidebar.selectbox("Upload", menu)
+
+    if choice == "Upload":
+        st.subheader("Upload the solita cv")
+        cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
+        if cv_data is not None:
+            st.subheader("Extracting data...")
+            cvTransformer.prepare_and_extract(cv_data)
+            st.write(cvTransformer.solitan)
+
+
+    elif choice == "Edit":
+        solitan = cvTransformer.solitan
+        create_form(solitan)
+        st.write(solitan)  # TODO: to delete when complited
+        # with st.form(key="form1"):
+        #     firstname = st.text_input("Firstname")
+        #     submit = st.form_submit_button("Submit")
+        #     with st.sidebar:
+        #         with st.spinner("loading"):
+        #             time.sleep(5)
+        #         st.success("Done")
+
+
+    elif choice == "Download":
+        st.subheader("Download the new pdf")
+
+
+    elif choice == "Upload template":
+
+        st.title("idk")
+        uploadedfiles = st.file_uploader("upload file")
+
+        save_uploadedfile(uploadedfiles)
+
+        st.subheader("All templates")
+        for file in os.listdir('assets/templates'):
+            st.write(file)
+            st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
+
 
 def save_uploadedfile(uploadedfile):
-    with open(os.path.join("assets/Templates", uploadedfile.name), "wb") as f:
+    with open(os.path.join("assets/templates", uploadedfile.name), "wb") as f:
         print(uploadedfile.getbuffer())
         f.write(uploadedfile.getbuffer())
-        return st.success("Saved File:{} to assets/Templates".format(uploadedfile.name))
+        return st.success("Saved File:{} to assets/templates".format(uploadedfile.name))
+
 
 def removeTemplateFile(filename):
-    os.remove('assets/Templates/' + filename)
-
-
+    os.remove('assets/templates/' + filename)
 
 
 def create_form(solitan):
@@ -55,14 +95,34 @@ def create_form(solitan):
 
         addSkills(solitan)
 
-        if st.form_submit_button("Download"):
+        input_path = 'assets/templates/cv_template.docx'
+        inbetween_path = 'assets/templates/semi_filled_template.docx'
+        output_path = 'assets/templates/filled_template.docx'
 
-            input_path = 'assets/Templates/cv_template.docx'
-            inbetween_path = 'assets/semi_filled_template.docx'
-            output_path = 'assets/filled_template.docx'
-
+        if st.form_submit_button("Render"):
             addExTable(input_path, inbetween_path, solitan)
             fill.argenta(inbetween_path, output_path, solitan)
+
+    result_doc = open(output_path, 'rb')
+    st.download_button('Download', result_doc, file_name='cv.docx', on_click=final(solitan))
+    result_doc.close()
+
+
+def final(solitan):
+    print("button click")
+    # list of all the project's tools thats going to render in the word doc
+    all_tools = []
+    for project in solitan.projects:
+        print(project.tools)
+        for tool in project.tools:
+            all_tools.append(tool)
+    found_tools = cvTransformer.last_found_tools
+
+    for tool in all_tools:
+        if tool not in found_tools:
+            print("add tool to csv file: " + tool)
+
+    print("reloading cvs file")
 
 
 def addPersonal(solitan):
@@ -143,7 +203,6 @@ def addEducation(solitan):
         [[c.start_date, c.end_date, c.cert_title, c.technology] for c in solitan.certifications],
         columns=['start_date', 'end_date', 'cert_title', 'technology'])
     # st.dataframe(data=df)
-    print(df3)
 
     gd3 = GridOptionsBuilder.from_dataframe(df3)
     gd3.configure_default_column(editable=True)
@@ -160,26 +219,22 @@ def addEducation(solitan):
 
 
 def addLanguages(solitan):
-    lang = {'french': {}, 'dutch': {}, 'englsih': {}}
-    lang = {'french': {}, 'dutch': {}, 'englsih': {}}
     st.subheader("Languages")
     scale = ['native', 'fluent', 'good', 'basic']
-    fra, dut, eng = st.columns(3)
+    spoken, written, compre = st.columns(3)
     # TODO: I think this should iterate into the languages of the solitan
-    with fra:
-        lang['french']['spoken'] = st.selectbox('French spoken', scale)
-        lang['french']['spoken'] = st.selectbox('Dutch spoken', scale)
-        lang['french']['spoken'] = st.selectbox('English spoken', scale)
-    with dut:
-        lang['french']['spoken'] = st.selectbox('French writen', scale)
-        lang['french']['spoken'] = st.selectbox('Dutch writen', scale)
-        lang['french']['spoken'] = st.selectbox('English writen', scale)
-    with eng:
-        lang['french']['spoken'] = st.selectbox('French comprehension', scale)
-        lang['french']['spoken'] = st.selectbox('Dutch comprehension', scale)
-        lang['french']['spoken'] = st.selectbox('English comprehension', scale)
-
-    solitan.languages = lang
+    with spoken:
+        solitan.french_spoken = st.selectbox('French spoken', scale)
+        solitan.dutch_spoken = st.selectbox('Dutch spoken', scale)
+        solitan.english_spoken = st.selectbox('English spoken', scale)
+    with written:
+        solitan.french_written = st.selectbox('French writen', scale)
+        solitan.dutch_written = st.selectbox('Dutch writen', scale)
+        solitan.english_written = st.selectbox('English writen', scale)
+    with compre:
+        solitan.french_comprehension = st.selectbox('French comprehension', scale)
+        solitan.dutch_comprehension = st.selectbox('Dutch comprehension', scale)
+        solitan.english_comprehension = st.selectbox('English comprehension', scale)
 
 
 def addProfExper(solitan):
@@ -207,8 +262,8 @@ def addProfExper(solitan):
 
     st.subheader('Projects')
     df4 = pd.DataFrame(
-        [[p.start_date, p.end_date, p.client, p.role, p.tasks] for p in solitan.projects],
-        columns=['start_date', 'end_date', 'client', 'role', 'tasks'])
+        [[p.start_date, p.end_date, p.client, p.role, p.tasks, p.methodologies, p.tools] for p in solitan.projects],
+        columns=['start_date', 'end_date', 'client', 'role', 'tasks', 'methodologies', 'tools'])
     # st.dataframe(data=df)
 
     gd4 = GridOptionsBuilder.from_dataframe(df4)
@@ -224,38 +279,31 @@ def addProfExper(solitan):
         solitan.projects[index].role = row['role']
         solitan.projects[index].client = row['client']
         solitan.projects[index].tasks = row['tasks']
+        solitan.projects[index].tools = row['tools']
 
 
 def addSkills(solitan):
     solitan.man_skills = st.text_area('Management Skills', value=solitan.man_skills)
-    solitan.tech_skills = st.text_area('Technical Skills', value=solitan.tech_skills)
+    st.write('Technical Skills')
+    df = pd.DataFrame(
+        [[s.skill, s.level, s.year_exp] for s in solitan.tech_skills],
+        columns=['skill', 'level', 'years_experience'])
+    # st.dataframe(data=df)
+
+    gd = GridOptionsBuilder.from_dataframe(df)
+    gd.configure_default_column(editable=True)
+    gd.configure_auto_height(False)
+    gridoptions = gd.build()
+    grid_response = AgGrid(df, gridOptions=gridoptions,
+                           update_mode=GridUpdateMode.SELECTION_CHANGED)
+    df = grid_response['data']
+    for index, row in df.iterrows():
+        solitan.tech_skills[index].skill = row['skill']
+        solitan.tech_skills[index].level = row['level']
+        solitan.tech_skills[index].year_exp = row['years_experience']
+
     solitan.other_skills = st.text_area('Others', value=solitan.other_skills)
 
 
-if choice == "Upload":
-    st.subheader("Upload the solita cv")
-    cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
-    if cv_data is not None:
-        st.legacy_caching.clear_cache()
-        solitan = create_solitan_profile()
-        st.subheader("Extracting data...")
-        cvTransformer = CVTransformer(cv_data, solitan)
-        solitan = cvTransformer.prepare_and_extract()
-        st.write(solitan)
-
-elif choice == "Edit":
-    create_form(solitan)
-
-elif choice == "Download":
-    st.subheader("Download the new pdf")
-
-elif choice == "Upload template":
-    st.title("idk")
-    uploadedfiles = st.file_uploader("upload file")
-
-    save_uploadedfile(uploadedfiles)
-
-    st.subheader("All templates")
-    for file in os.listdir('assets/Templates'):
-        st.write(file)
-        st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
+if __name__ == '__main__':
+    main()
