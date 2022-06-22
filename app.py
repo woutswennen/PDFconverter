@@ -32,7 +32,6 @@ def main(cvTransformer=cvTransformer):
     if choice == "Upload":
         st.subheader("Upload the solita cv")
         cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
-        # solitan = Solitan()
         if cv_data is not None:
             st.subheader("Extracting data...")
             cvTransformer.prepare_and_extract(cv_data)
@@ -67,6 +66,7 @@ def main(cvTransformer=cvTransformer):
         for file in os.listdir('assets/templates'):
             st.write(file)
             st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
+
 
 def save_uploadedfile(uploadedfile):
     with open(os.path.join("assets/templates", uploadedfile.name), "wb") as f:
@@ -287,7 +287,7 @@ def addSkills(solitan):
     st.write('Technical Skills')
     df = pd.DataFrame(
         [[s.skill, s.level, s.year_exp] for s in solitan.tech_skills],
-        columns=['skill','level','years_experience'])
+        columns=['skill', 'level', 'years_experience'])
     # st.dataframe(data=df)
 
     gd = GridOptionsBuilder.from_dataframe(df)
@@ -303,3 +303,7 @@ def addSkills(solitan):
         solitan.tech_skills[index].year_exp = row['years_experience']
 
     solitan.other_skills = st.text_area('Others', value=solitan.other_skills)
+
+
+if __name__ == '__main__':
+    main()
