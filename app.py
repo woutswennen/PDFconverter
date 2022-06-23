@@ -10,10 +10,8 @@ import datetime
 from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
-from utils.Output import addExTable
 import utils.fillTemplate as fill
 from utils.CVTransformer import CVTransformer
-from utils.Solitan import Solitan
 from utils.Output import addExTable
 
 
@@ -30,25 +28,17 @@ def main(cvTransformer=cvTransformer):
     choice = st.sidebar.selectbox("Upload", menu)
 
     if choice == "Upload":
-        st.subheader("Upload the solita cv")
+        cvTransformer.solitan.clear()
+        st.subheader("Upload the Solita cv")
         cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
         if cv_data is not None:
-            st.subheader("Extracting data...")
-            cvTransformer.prepare_and_extract(cv_data)
+            st.write(cvTransformer.prepare_and_extract(cv_data))
             st.write(cvTransformer.solitan)
-
+            st.subheader('Data Extracted!')
 
     elif choice == "Edit":
         solitan = cvTransformer.solitan
         create_form(solitan)
-        st.write(solitan)  # TODO: to delete when complited
-        # with st.form(key="form1"):
-        #     firstname = st.text_input("Firstname")
-        #     submit = st.form_submit_button("Submit")
-        #     with st.sidebar:
-        #         with st.spinner("loading"):
-        #             time.sleep(5)
-        #         st.success("Done")
 
 
     elif choice == "Download":
@@ -70,7 +60,6 @@ def main(cvTransformer=cvTransformer):
 
 def save_uploadedfile(uploadedfile):
     with open(os.path.join("assets/templates", uploadedfile.name), "wb") as f:
-        print(uploadedfile.getbuffer())
         f.write(uploadedfile.getbuffer())
         return st.success("Saved File:{} to assets/templates".format(uploadedfile.name))
 
@@ -109,11 +98,9 @@ def create_form(solitan):
 
 
 def final(solitan):
-    print("button click")
     # list of all the project's tools thats going to render in the word doc
     all_tools = []
     for project in solitan.projects:
-        print(project.tools)
         for tool in project.tools:
             all_tools.append(tool)
     found_tools = cvTransformer.last_found_tools

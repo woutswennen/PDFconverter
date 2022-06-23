@@ -45,7 +45,6 @@ def addExRows(table, row):
     row_count = 0
     while (row_count != 8):
         # add row at bottom of table
-        print(row_count)
         table.add_row()
         new_row = table.rows[-1]
         # possition new row just behind given row
