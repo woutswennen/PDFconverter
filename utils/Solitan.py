@@ -80,12 +80,24 @@ class Project:
         self.methodologies = []
 
     def __repr__(self):
-        return f"""\n
-        Role = {self.role}
-        Client = {self.client}
-        Start date = {self.start_date}
-        End date = {self.end_date}
-        Tasks = {self.tasks}\n"""
+        result = ''
+        if self.role is not '':
+            result += f'\nRole = {self.role}'
+        if self.client is not '':
+            result += f'\nClient = {self.client}'
+        if self.start_date is not '':
+            result += f'\nStart date = {self.start_date}'
+        if self.end_date is not '':
+            result += f'\nEnd date = {self.end_date}'
+        if self.tasks is not '':
+            result += f'\nTasks = {self.tasks}'
+        if self.methodologies is not '':
+            result += f'\nMethodologies = {self.methodologies}'
+        if self.tools is not '':
+            result += f'\nTools = {self.tools}'
+        if self.environment is not '':
+            result += f'\nEnvironment = {self.environment}'
+        return result
 
 
 class Certification:
@@ -97,12 +109,19 @@ class Certification:
         self.reference = ""
 
     def __repr__(self):
-        return f"""\n
-        Certification : {self.cert_title}
-        Start date = {self.start_date}
-        End date = {self.end_date}
-        Technology = {self.technology}
-        Reference = {self.reference}\n"""
+        result = '[\n'
+        if self.cert_title is not '':
+            result += f'\n\tCertification = {self.cert_title}'
+        if self.start_date is not '':
+            result += f'\n\tStart date = {self.start_date}'
+        if self.end_date is not '':
+            result += f'\n\tEnd date = {self.end_date}'
+        if self.technology is not '':
+            result += f'\n\tTechnology = {self.technology}'
+        if self.reference is not '':
+            result += f'\n\tReference = {self.reference}'
+        result += '\n]'
+        return result
 
 
 class Skill:

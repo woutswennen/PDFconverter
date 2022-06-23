@@ -3,6 +3,8 @@
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 import os
 import random
+from _csv import writer
+from ast import literal_eval
 
 import streamlit as st
 import pandas as pd
@@ -103,26 +105,35 @@ def create_form(solitan):
             addExTable(input_path, inbetween_path, solitan)
             fill.argenta(inbetween_path, output_path, solitan)
 
+
     result_doc = open(output_path, 'rb')
-    st.download_button('Download', result_doc, file_name='cv.docx', on_click=final(solitan))
+    filename = solitan.name + '_' + solitan.lastname + '_cv.docx'
+    st.download_button('Download', result_doc, file_name=filename, on_click=final(solitan))
     result_doc.close()
 
 
 def final(solitan):
-    print("button click")
+
     # list of all the project's tools thats going to render in the word doc
     all_tools = []
     for project in solitan.projects:
-        print(project.tools)
-        for tool in project.tools:
+        for tool in literal_eval(project.tools):
             all_tools.append(tool)
+
+    #tools that where found by the matcher
     found_tools = cvTransformer.last_found_tools
 
-    for tool in all_tools:
-        if tool not in found_tools:
-            print("add tool to csv file: " + tool)
 
-    print("reloading cvs file")
+    # add the tools that where added bij the user and are not already in the listing software file
+    with open('data/ds_job_listing_software.csv', 'a', newline='') as f_object:
+        writer_object = writer(f_object)
+        for tool in all_tools:
+            if tool not in found_tools:
+                list_data = [tool]
+                writer_object.writerow(list_data)
+        f_object.close()
+
+
 
 
 def addPersonal(solitan):
@@ -178,6 +189,10 @@ def addProfRef(solitan):
     response_array = df.values.tolist()
     solitan.references = response_array
 
+    if st.form_submit_button("print grid_response profref"):
+        print(df)
+
+
 
 def addEducation(solitan):
     st.subheader("Education")
@@ -190,13 +205,14 @@ def addEducation(solitan):
     gd2.configure_auto_height(False)
     gridoptions2 = gd2.build()
     grid_response = AgGrid(df2, gridOptions=gridoptions2,
-                           update_mode=GridUpdateMode.SELECTION_CHANGED)
+                           data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
     df = grid_response['data']
-    for index, row in df2.iterrows():
+    for index, row in df.iterrows():
         solitan.education[index].title = row['title']
         solitan.education[index].end_date = row['end_date']
         solitan.education[index].institution = row['institution']
         solitan.education[index].education_description = row['education_description']
+
 
     st.subheader("Certification")
     df3 = pd.DataFrame(
@@ -209,7 +225,7 @@ def addEducation(solitan):
     gd3.configure_auto_height(False)
     gridoptions3 = gd3.build()
     grid_response3 = AgGrid(df3, gridOptions=gridoptions3,
-                            update_mode=GridUpdateMode.SELECTION_CHANGED)
+                            data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
     df = grid_response3['data']
     for index, row in df3.iterrows():
         solitan.certifications[index].start_date = row['start_date']
@@ -249,9 +265,9 @@ def addProfExper(solitan):
     gd2.configure_auto_height(False)
     gridoptions2 = gd2.build()
     grid_response = AgGrid(df2, gridOptions=gridoptions2,
-                           update_mode=GridUpdateMode.SELECTION_CHANGED)
+                           data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
     df = grid_response['data']
-    for index, row in df2.iterrows():
+    for index, row in df.iterrows():
         solitan.workExperience[index].start_date = row['start_date']
         solitan.workExperience[index].end_date = row['end_date']
         solitan.workExperience[index].job_title = row['job_title']
@@ -270,7 +286,7 @@ def addProfExper(solitan):
     gd4.configure_default_column(editable=True)
     gd4.configure_auto_height(False)
     gridoptions4 = gd4.build()
-    grid_response4 = AgGrid(df4, gridOptions=gridoptions4, update_mode=GridUpdateMode.SELECTION_CHANGED)
+    grid_response4 = AgGrid(df4, gridOptions=gridoptions4, data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
 
     df4 = grid_response4['data']
     for index, row in df4.iterrows():
@@ -295,7 +311,7 @@ def addSkills(solitan):
     gd.configure_auto_height(False)
     gridoptions = gd.build()
     grid_response = AgGrid(df, gridOptions=gridoptions,
-                           update_mode=GridUpdateMode.SELECTION_CHANGED)
+                           data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
     df = grid_response['data']
     for index, row in df.iterrows():
         solitan.tech_skills[index].skill = row['skill']

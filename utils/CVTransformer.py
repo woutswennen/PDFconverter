@@ -14,6 +14,8 @@ class CVTransformer:
         self.solitan = Solitan()
         self.nlp = spacy.load("en_core_web_lg")
         self.nlp.get_pipe("ner").labels
+        #these will be the all the tools found without the client changing them in the UI
+        self.last_found_tools = []
 
         self.matcher_dates = Matcher(self.nlp.vocab)
         self.matcher_lower = Matcher(self.nlp.vocab)
@@ -31,8 +33,7 @@ class CVTransformer:
         self.matcher_lower.add('Lower case text', [pattern_lower])
 
         self.matcher = PhraseMatcher(self.nlp.vocab, attr='LOWER')
-        # need this to see what tools matcher found
-        self.last_found_tools = []
+        #add the 2 references files to the toolmatcher
         self.add_small()
         self.add_big()
 
@@ -126,6 +127,8 @@ class CVTransformer:
     def get_projects(self):
         doc = self.nlp(self.cv_in_sections['Projects'])
         date_matches = self.filter_matches_by_longest_string(self.matcher_dates(doc))
+        # these will be the tools found without the client changing them in the UI
+        tools_result = []
         for i in range(0, len(date_matches)):
             project = Project()
             match_id, start, end = date_matches[i]
@@ -151,11 +154,14 @@ class CVTransformer:
             if 'waterfall' in project.tasks.lower():
                 project.methodologies.append('Waterfall')
 
-            # #check tools in tasks
             project.tools = self.getProjectTools(project.tasks)
+            for tool in project.tools:
+                tools_result.append(tool)
             #add new project object to projects list
             self.solitan.projects.append(project)
-
+        print('tools result: ')
+        print(tools_result)
+        self.last_found_tools = tools_result
 
     def get_certificates(self):
         doc = self.nlp(self.cv_in_sections['Certificates'])
@@ -257,7 +263,6 @@ class CVTransformer:
             if span.text.upper() not in (tool.upper() for tool in found_tools):
                 found_tools.append(span.text)
 
-        last_found_tools = found_tools
         return found_tools
 
     def reload_small(self):
