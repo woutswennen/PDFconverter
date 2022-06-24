@@ -207,7 +207,7 @@ def addEducation(solitan):
 
 def addLanguages(solitan):
     st.subheader("Languages")
-    scale = ['native', 'fluent', 'good', 'basic']
+    scale = ['Basics', 'Moderate', 'Good', 'Excellent', 'Native language']
     spoken, written, compre = st.columns(3)
     # TODO: I think this should iterate into the languages of the solitan
     with spoken:

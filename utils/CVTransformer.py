@@ -9,7 +9,7 @@ import csv
 
 class CVTransformer:
     def __init__(self):
-        self.cv_in_sections = None
+        self.cv_in_sections = dict()
         self.cv = None
         self.solitan = Solitan()
         self.nlp = spacy.load("en_core_web_lg")
@@ -58,15 +58,21 @@ class CVTransformer:
         return self.solitan
 
     def get_sections(self):
-        sections = ['Personal Info', 'Strengths', 'Work history', 'Education', 'Certificates', 'Projects', 'Skills',
-                    'Web presence', 'Languages', 'Hobbies & passions']
-        self.cv_in_sections = dict()
-        cv_copy = self.cv
-        for i in range(0, len(sections) - 1):
-            cv_splitted = cv_copy.split(sections[i + 1] + '\n')
-            self.cv_in_sections[sections[i]] = cv_splitted[0]
-            if len(cv_splitted) > 1:
-                cv_copy = cv_splitted[1]
+        phrase_matcher = PhraseMatcher(self.nlp.vocab)
+
+        sections = [self.nlp(title) for title in
+                    ['Personal Info', 'Strengths', 'Work history', 'Education', 'Certificates', 'Projects', 'Skills',
+                     'Web presence', 'Languages', 'Hobbies & passions']]
+
+        doc = self.nlp(self.cv)
+        print(doc)
+        phrase_matcher.add("SECTION", None, *sections)
+        matches = phrase_matcher(doc)
+        for i in range(0, len(matches) - 1):
+            match_id, start, end = matches[i]
+            match_id_next, start_next, end_next = matches[i + 1]
+            self.cv_in_sections[doc[start:end].text] = doc[end:start_next].text
+        self.cv_in_sections[doc[start_next:end_next].text] = doc[end_next::].text
 
     def get_personal_info(self):
         cv_in_lines = self.cv.splitlines()
