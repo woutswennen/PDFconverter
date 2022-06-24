@@ -33,7 +33,7 @@ def main(cvTransformer=cvTransformer):
         cvTransformer.solitan.clear()
         st.subheader("Upload the Solita cv")
         cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
-        if cv_data is not None:
+        if cv_data != None:
             st.write(cvTransformer.prepare_and_extract(cv_data))
             st.write(cvTransformer.solitan)
             st.subheader('Data Extracted!')
@@ -104,6 +104,7 @@ def final(solitan):
     # list of all the project's tools thats going to render in the word doc
     all_tools = []
     for project in solitan.projects:
+        st.write(type(project.tools))
         for tool in literal_eval(project.tools):
             all_tools.append(tool)
 
@@ -283,7 +284,7 @@ def addProfExper(solitan):
         solitan.projects[index].role = row['role']
         solitan.projects[index].client = row['client']
         solitan.projects[index].tasks = row['tasks']
-        solitan.projects[index].tools = row['tools']
+        solitan.projects[index].tools = literal_eval(row['tools'])
 
 
 def addSkills(solitan):
