@@ -32,7 +32,9 @@ class Solitan:
         Work workExperience = {self.workExperience}\n
         Education =  {self.education}\n
         Projects = {self.projects}\n
-        Certifications = {self.certifications}\n """
+        Certifications = {self.certifications}\n 
+        Skills = {self.tech_skills}\n 
+        Languages = {self.languages}\n """
 
     def clear(self):
         self.name = ""
@@ -131,18 +133,18 @@ class Certification:
 
 class Skill:
     def __init__(self):
-        skill = ""
-        level = ""
-        years_exp = ""
+        self.skill = ""
+        self.level = ""
+        self.years_exp = ""
 
     def __repr__(self):
         return f"""\n{self.skill}, {self.level}, {self.year_exp}.\n"""
 
 
 class Language:
-    def __init__(self):
-        language = ""
-        level = ""
+    def __init__(self, language, level):
+        self.language = language
+        self.level = level
 
     def __repr__(self):
         return f"""\n{self.language}, {self.level}.\n"""
