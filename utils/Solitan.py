@@ -101,7 +101,8 @@ class Project:
         self.client = ""
         self.role = ""
         self.tasks = ""
-        self.tools = []
+        self.tools = ""
+        self.found_tools = []
         self.environment = ""
         self.methodologies = []
 

@@ -6,6 +6,8 @@ from tika import parser
 import pandas as pd
 import csv
 
+from utils.StringTransform import addItemsToString
+
 
 class CVTransformer:
     def __init__(self):
@@ -96,7 +98,7 @@ class CVTransformer:
         doc = self.nlp(self.cv_in_sections['Work history'])
         matches = self.matcher_dates(doc)
         if len(matches) > 0:
-            date_matches = filter_matches_by_longest_string(matches)
+            date_matches = self.filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
                 workExperience = WorkExperience()
                 match_id, start, end = date_matches[i]
@@ -119,7 +121,7 @@ class CVTransformer:
         doc = self.nlp(self.cv_in_sections['Education'])
         matches = self.matcher_dates(doc)
         if len(matches) > 0:
-            date_matches = filter_matches_by_longest_string(matches)
+            date_matches = self.filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
                 match_id, start, end = date_matches[i]
                 education = Education()
@@ -143,7 +145,7 @@ class CVTransformer:
         doc = self.nlp(self.cv_in_sections['Projects'])
         matches = self.matcher_dates(doc)
         if len(matches) > 0:
-            date_matches = filter_matches_by_longest_string(matches)
+            date_matches = self.filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
                 project = Project()
                 match_id, start, end = date_matches[i]
@@ -153,6 +155,7 @@ class CVTransformer:
                 else:
                     project.start_date = span_date[0]
         date_matches = self.filter_matches_by_longest_string(self.matcher_dates(doc))
+
         # these will be the tools found without the client changing them in the UI
         tools_result = []
         for i in range(0, len(date_matches)):
@@ -181,15 +184,18 @@ class CVTransformer:
                     project.methodologies.append('Waterfall')
 
                 # #check tools in tasks
-                project.tools = self.getProjectTools(project.tasks)
+                project.found_tools = self.getProjectTools(project.tasks)
+                addItemsToString(project.tools, project.found_tools)
                 # add new project object to projects list
+                print('projectxd')
+                print(str(project))
                 self.solitan.projects.append(project)
 
     def get_certificates(self):
         doc = self.nlp(self.cv_in_sections['Certificates'])
         matches = self.matcher_dates(doc)
         if len(matches) > 0:
-            date_matches = filter_matches_by_longest_string(matches)
+            date_matches = self.filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
                 certification = Certification()
                 match_id, start, end = date_matches[i]
@@ -278,7 +284,6 @@ class CVTransformer:
             if span.text.upper() not in (tool.upper() for tool in found_tools):
                 found_tools.append(span.text)
 
-        last_found_tools = found_tools
         return found_tools
 
     def reload_small(self):
@@ -290,11 +295,11 @@ class CVTransformer:
         self.add_small()
 
 
-def filter_matches_by_longest_string(matches):
-    filtered_matches = []
-    for i in range(0, len(matches) - 1):
-        match_id, start, end = matches[i]
-        if not start >= matches[i + 1][1] and end <= matches[i + 1][2]:
-            filtered_matches.append(matches[i])
-    filtered_matches.append(matches[-1])
-    return filtered_matches
+    def filter_matches_by_longest_string(self, matches):
+        filtered_matches = []
+        for i in range(0, len(matches) - 1):
+            match_id, start, end = matches[i]
+            if not start >= matches[i + 1][1] and end <= matches[i + 1][2]:
+                filtered_matches.append(matches[i])
+        filtered_matches.append(matches[-1])
+        return filtered_matches
