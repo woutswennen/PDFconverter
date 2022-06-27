@@ -12,7 +12,6 @@ RUN pip3 install --upgrade pip requests
 RUN pip3 install python-docx tika numpy pandas
 RUN pip3 install -U setuptools wheel
 RUN pip3 install -U spacy
-RUN python3 -m spacy download en_core_web_lg
 
 RUN mkdir ./app
 COPY . ./app
