@@ -139,3 +139,17 @@ class Skill:
 
     def __repr__(self):
         return f"""\n{self.skill}, {self.level}, {self.year_exp}.\n"""
+
+
+class Language:
+    def __init__(self, language, level):
+        self.language = language
+        self.spoken_level = level
+        self.written_level = level
+        self.reading_level = level
+
+    def __repr__(self):
+        return f"""\n{self.language}\n
+        Spoken level: {self.spoken_level}\n
+        Written level: {self.written_level}\n
+        Reading level: {self.reading_level}.\n"""

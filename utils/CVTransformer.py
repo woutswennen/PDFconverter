@@ -1,7 +1,7 @@
 import re
 import spacy
 from spacy.matcher import Matcher, PhraseMatcher
-from utils.Solitan import Solitan, WorkExperience, Education, Project, Certification, Skill
+from utils.Solitan import Solitan, WorkExperience, Education, Project, Certification, Skill, Language
 from tika import parser
 import pandas as pd
 import csv
@@ -221,24 +221,11 @@ class CVTransformer:
         self.solitan.man_skills = self.cv_in_sections['Strengths'].splitlines()
 
     def get_languages(self):
-        doc = self.nlp(self.cv_in_sections['Languages'])
-        pattern = [{"TAG": 'JJ'}]
-
-        matcher = Matcher(self.nlp.vocab)
-        matcher.add('LANGUAGE', [pattern])
-        matches = matcher(doc)
-
-        for i in range(0, len(matches)):
-            language = None
-            if i < len(matches) - 1:
-                match_id, start, end = matches[i]
-                match_id_next, start_next, end_next = matches[i + 1]
-                span_language = doc[start: end].text
-                span_level = doc[end:start_next].text
-            else:
-                span_language = doc[start_next: end_next].text
-                span_level = doc[end_next::].text
-            self.solitan.languages[span_language] = span_level.strip('\n ')
+        doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
+        for line in doc.text.splitlines():
+            span_language, span_level = line.split(' ', 1)
+            language = Language(span_language, span_level)
+            self.solitan.languages[span_language] = language
 
     def add_small(self):
         # open small csv and add tools to list
