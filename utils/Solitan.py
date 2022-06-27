@@ -17,7 +17,7 @@ class Solitan:
         self.workExperience = []
         self.education = []
         self.projects = []
-        self.languages = []
+        self.languages = {}
         self.other_skills = []
         self.man_skills = []
         self.tech_skills = []
@@ -25,14 +25,40 @@ class Solitan:
     def __str__(self):
         return f"""
         Name = {self.name}\n
-        Lasname = {self.lastname}\n
+        Lastname = {self.lastname}\n
         Rol = {self.rol}\n
-        Info = {self.info}\~
+        Info = {self.info}
         Strengths = {self.strengths}\n
         Work workExperience = {self.workExperience}\n
         Education =  {self.education}\n
         Projects = {self.projects}\n
-        Certifications = {self.certifications}\n """
+        Certifications = {self.certifications}\n 
+        Skills = {self.tech_skills}\n 
+        Languages = {self.languages}\n """
+
+    def clear(self):
+        self.name = ""
+        self.lastname = ""
+        self.rol = ""
+        self.gender = ""
+        self.birthday = ""
+        self.nationality = ""
+        self.work_occupation = ""
+        self.fitness = ""
+        self.info = ""
+        self.strengths = ""
+        self.references = ""
+        self.availability = ""
+
+        self.certifications = []
+        self.workExperience = []
+        self.education = []
+        self.projects = []
+        self.languages = {}
+        self.other_skills = []
+        self.man_skills = []
+        self.tech_skills = []
+        print('Solitan to zero')
 
 
 class WorkExperience:
@@ -126,9 +152,23 @@ class Certification:
 
 class Skill:
     def __init__(self):
-        skill = ""
-        level = ""
-        years_exp = ""
+        self.skill = ""
+        self.level = ""
+        self.years_exp = ""
 
     def __repr__(self):
         return f"""\n{self.skill}, {self.level}, {self.year_exp}.\n"""
+
+
+class Language:
+    def __init__(self, language, level):
+        self.language = language
+        self.spoken_level = level
+        self.written_level = level
+        self.reading_level = level
+
+    def __repr__(self):
+        return f"""\n{self.language}\n
+        Spoken level: {self.spoken_level}\n
+        Written level: {self.written_level}\n
+        Reading level: {self.reading_level}.\n"""

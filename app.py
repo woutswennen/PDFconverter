@@ -12,11 +12,10 @@ import datetime
 from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
-from utils.Output import addExTable
 import utils.fillTemplate as fill
 from utils.CVTransformer import CVTransformer
-from utils.Solitan import Solitan
 from utils.Output import addExTable
+from utils.Solitan import Language
 
 
 @st.cache(allow_output_mutation=True)
@@ -32,25 +31,17 @@ def main(cvTransformer=cvTransformer):
     choice = st.sidebar.selectbox("Upload", menu)
 
     if choice == "Upload":
-        st.subheader("Upload the solita cv")
+        cvTransformer.solitan.clear()
+        st.subheader("Upload the Solita cv")
         cv_data = st.file_uploader("Upload Solita CV", type=["pdf"])
         if cv_data is not None:
-            st.subheader("Extracting data...")
-            cvTransformer.prepare_and_extract(cv_data)
+            st.write(cvTransformer.prepare_and_extract(cv_data))
             st.write(cvTransformer.solitan)
-
+            st.subheader('Data Extracted!')
 
     elif choice == "Edit":
         solitan = cvTransformer.solitan
         create_form(solitan)
-        st.write(solitan)  # TODO: to delete when complited
-        # with st.form(key="form1"):
-        #     firstname = st.text_input("Firstname")
-        #     submit = st.form_submit_button("Submit")
-        #     with st.sidebar:
-        #         with st.spinner("loading"):
-        #             time.sleep(5)
-        #         st.success("Done")
 
 
     elif choice == "Download":
@@ -72,7 +63,6 @@ def main(cvTransformer=cvTransformer):
 
 def save_uploadedfile(uploadedfile):
     with open(os.path.join("assets/templates", uploadedfile.name), "wb") as f:
-        print(uploadedfile.getbuffer())
         f.write(uploadedfile.getbuffer())
         return st.success("Saved File:{} to assets/templates".format(uploadedfile.name))
 
@@ -117,7 +107,7 @@ def final(solitan):
     # list of all the project's tools thats going to render in the word doc
     all_tools = []
     for project in solitan.projects:
-        for tool in literal_eval(project.tools):
+        for tool in project.tools:
             all_tools.append(tool)
 
     #tools that where found by the matcher
@@ -133,7 +123,7 @@ def final(solitan):
                 writer_object.writerow(list_data)
         f_object.close()
 
-
+    print("reloading cvs file")
 
 
 def addPersonal(solitan):
@@ -189,10 +179,6 @@ def addProfRef(solitan):
     response_array = df.values.tolist()
     solitan.references = response_array
 
-    if st.form_submit_button("print grid_response profref"):
-        print(df)
-
-
 
 def addEducation(solitan):
     st.subheader("Education")
@@ -206,13 +192,11 @@ def addEducation(solitan):
     gridoptions2 = gd2.build()
     grid_response = AgGrid(df2, gridOptions=gridoptions2,
                            data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
-    df = grid_response['data']
-    for index, row in df.iterrows():
+    for index, row in df2.iterrows():
         solitan.education[index].title = row['title']
         solitan.education[index].end_date = row['end_date']
         solitan.education[index].institution = row['institution']
         solitan.education[index].education_description = row['education_description']
-
 
     st.subheader("Certification")
     df3 = pd.DataFrame(
@@ -236,21 +220,37 @@ def addEducation(solitan):
 
 def addLanguages(solitan):
     st.subheader("Languages")
-    scale = ['native', 'fluent', 'good', 'basic']
+    scale = ['None', 'Basics', 'Moderate', 'Good', 'Excellent', 'Native language']
     spoken, written, compre = st.columns(3)
     # TODO: I think this should iterate into the languages of the solitan
+    if 'French' in solitan.languages:
+        french_idx = scale.index(solitan.languages['French'].spoken_level)
+    else:
+        solitan.languages['French'] = Language('French', 'None')
+        french_idx = 0
+    if 'Dutch' in solitan.languages:
+        dutch_idx = scale.index(solitan.languages['Dutch'].spoken_level)
+    else:
+        solitan.languages['Dutch'] = Language('Dutch', 'None')
+        dutch_idx = 0
+    if 'French' in solitan.languages:
+        english_idx = scale.index(solitan.languages['English'].spoken_level)
+    else:
+        solitan.languages['English'] = Language('English', 'None')
+        english_idx = 0
+
     with spoken:
-        solitan.french_spoken = st.selectbox('French spoken', scale)
-        solitan.dutch_spoken = st.selectbox('Dutch spoken', scale)
-        solitan.english_spoken = st.selectbox('English spoken', scale)
+        solitan.languages['French'].spoken_level = st.selectbox('French spoken', scale, index=french_idx)
+        solitan.languages['Dutch'].spoken_level = st.selectbox('Dutch spoken', scale, index=dutch_idx)
+        solitan.languages['English'].spoken_level = st.selectbox('English spoken', scale, index=english_idx)
     with written:
-        solitan.french_written = st.selectbox('French writen', scale)
-        solitan.dutch_written = st.selectbox('Dutch writen', scale)
-        solitan.english_written = st.selectbox('English writen', scale)
+        solitan.languages['French'].written_level = st.selectbox('French writen', scale, index=french_idx)
+        solitan.languages['Dutch'].written_level = st.selectbox('Dutch writen', scale, index=dutch_idx)
+        solitan.languages['English'].written_level = st.selectbox('English writen', scale, index=english_idx)
     with compre:
-        solitan.french_comprehension = st.selectbox('French comprehension', scale)
-        solitan.dutch_comprehension = st.selectbox('Dutch comprehension', scale)
-        solitan.english_comprehension = st.selectbox('English comprehension', scale)
+        solitan.languages['French'].reading_level = st.selectbox('French comprehension', scale, index=french_idx)
+        solitan.languages['Dutch'].reading_level = st.selectbox('Dutch comprehension', scale, index=dutch_idx)
+        solitan.languages['English'].reading_level = st.selectbox('English comprehension', scale, index=english_idx)
 
 
 def addProfExper(solitan):
@@ -266,8 +266,7 @@ def addProfExper(solitan):
     gridoptions2 = gd2.build()
     grid_response = AgGrid(df2, gridOptions=gridoptions2,
                            data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
-    df = grid_response['data']
-    for index, row in df.iterrows():
+    for index, row in df2.iterrows():
         solitan.workExperience[index].start_date = row['start_date']
         solitan.workExperience[index].end_date = row['end_date']
         solitan.workExperience[index].job_title = row['job_title']
