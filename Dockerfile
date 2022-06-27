@@ -17,8 +17,20 @@ RUN mkdir ./app
 COPY . ./app
 WORKDIR ./app
 
+
+
+# verify permissions set
+RUN ls -lah /usr/lib/python3/dist-packages/
+
+# put the requirements file into the container
 COPY requirements.txt ./requirements.txt
-RUN pip install -r requirements.txt
+
+# install the requirements in the container
+RUN pip install -r requirements.txt \
+  && chmod 777 /usr/lib/python3/dist-packages/*
+
+# verify permissions set
+RUN ls -lah /usr/lib/python3/dist-packages/
 
 EXPOSE 8501
 
