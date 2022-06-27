@@ -1,7 +1,7 @@
 import re
 import spacy
 from spacy.matcher import Matcher, PhraseMatcher
-from utils.Solitan import Solitan, WorkExperience, Education, Project, Certification, Skill, Language
+from utils.Solitan import Solitan, WorkExperience, Education, Project, Certification, Skill
 from tika import parser
 import pandas as pd
 import csv
@@ -27,7 +27,7 @@ class CVTransformer:
                     {"LOWER": 'present'}]
         pattern4 = [{"TEXT": {"REGEX": '^[0-9]{4}$'}}]
         pattern5 = [{"TEXT": {"REGEX": '[0-9]*'}},
-                   {"LOWER": 'year'}]
+                    {"LOWER": 'year'}]
 
         pattern_lower = [{"TEXT": {"REGEX": '[A-Z]*[a-z]+'}}]
 
@@ -219,6 +219,7 @@ class CVTransformer:
             self.solitan.tech_skills.append(skill)
 
         self.solitan.man_skills = self.cv_in_sections['Strengths'].splitlines()
+
     def get_languages(self):
         doc = self.nlp(self.cv_in_sections['Languages'])
         pattern = [{"TAG": 'JJ'}]
@@ -236,9 +237,8 @@ class CVTransformer:
                 span_level = doc[end:start_next].text
             else:
                 span_language = doc[start_next: end_next].text
-                span_level = doc[end_next::].text.strip('\n')
-            language = Language(span_language, span_level)
-            self.solitan.languages.append(language)
+                span_level = doc[end_next::].text
+            self.solitan.languages[span_language] = span_level.strip('\n ')
 
     def add_small(self):
         # open small csv and add tools to list

@@ -17,7 +17,7 @@ class Solitan:
         self.workExperience = []
         self.education = []
         self.projects = []
-        self.languages = []
+        self.languages = {}
         self.other_skills = []
         self.man_skills = []
         self.tech_skills = []
@@ -54,7 +54,7 @@ class Solitan:
         self.workExperience = []
         self.education = []
         self.projects = []
-        self.languages = []
+        self.languages = {}
         self.other_skills = []
         self.man_skills = []
         self.tech_skills = []
@@ -139,12 +139,3 @@ class Skill:
 
     def __repr__(self):
         return f"""\n{self.skill}, {self.level}, {self.year_exp}.\n"""
-
-
-class Language:
-    def __init__(self, language, level):
-        self.language = language
-        self.level = level
-
-    def __repr__(self):
-        return f"""\n{self.language}, {self.level}.\n"""
