@@ -147,6 +147,7 @@ class CVTransformer:
     def get_projects(self):
         doc = self.nlp(self.cv_in_sections['Projects'])
         matches = self.matcher_dates(doc)
+        self.last_found_tools = []
         if len(matches) > 0:
             date_matches = filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
@@ -174,8 +175,11 @@ class CVTransformer:
                 if 'waterfall' in project.tasks.lower():
                     project.methodologies = addItemToString(project.methodologies, 'Waterfall')
 
+
+                project_tools = self.getProjectTools(project.tasks)
+                self.last_found_tools += project_tools
                 # #check tools in tasks
-                project.tools = addItemsToString(project.tools, self.getProjectTools(project.tasks))
+                project.tools = addItemsToString(project.tools, project_tools)
                 # add new project object to projects list
                 self.solitan.projects.append(project)
 
@@ -228,6 +232,8 @@ class CVTransformer:
         man_skills_array = [skill for skill in man_skills_array if skill != '']
         self.solitan.man_skills = addItemsToString(self.solitan.man_skills, man_skills_array)
 
+
+
     def get_languages(self):
         doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
         for line in doc.text.splitlines():
@@ -235,29 +241,7 @@ class CVTransformer:
             language = Language(span_language, span_level)
             self.solitan.languages[span_language] = language
 
-    def add_small(self):
-        # open small csv and add tools to list
-        smallList = []
-        with open('./data/ds_job_listing_software.csv', newline='') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',')
-            for row in reader:
-                smallList.append(row[0])
 
-        # create patterns of small list
-        phrase_patterns_small_list = [self.nlp(text) for text in smallList]
-        # add small list
-        self.matcher.add('data science', None, *phrase_patterns_small_list)
-
-    # takes very long
-    def add_big(self):
-        # read big list
-        df = pd.read_excel('./data/Technology Skills.xlsx')
-        # create patterns of big list
-        phrase_patterns_big_list = [self.nlp(text) for text in df.Example]
-
-        # add small and big list patterns to the matcher
-
-        self.matcher.add('software', None, *phrase_patterns_big_list)
 
     def getProjectTools(self, description):
         project_description = self.nlp(description)
@@ -283,6 +267,31 @@ class CVTransformer:
     def reload_big(self):
         self.matcher.remove('software')
         self.add_small()
+
+    def add_small(self):
+        # open small csv and add tools to list
+        smallList = []
+        with open('./data/ds_job_listing_software.csv', newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            for row in reader:
+                smallList.append(row[0])
+                print(row[0])
+            print('hier boven')
+        # create patterns of small list
+        phrase_patterns_small_list = [self.nlp(text) for text in smallList]
+        # add small list
+        self.matcher.add('data science', None, *phrase_patterns_small_list)
+
+    # takes very long
+    def add_big(self):
+        # read big list
+        df = pd.read_excel('./data/Technology Skills.xlsx')
+        # create patterns of big list
+        phrase_patterns_big_list = [self.nlp(text) for text in df.Example]
+
+        # add small and big list patterns to the matcher
+
+        self.matcher.add('software', None, *phrase_patterns_big_list)
 
 
 def filter_matches_by_longest_string(matches):

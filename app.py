@@ -102,13 +102,17 @@ def create_form(solitan):
     result_doc.close()
 
 
+
+
 def final(solitan):
 
     # list of all the project's tools thats going to render in the word doc
     all_tools = []
     for project in solitan.projects:
-        for tool in project.tools:
-            all_tools.append(tool)
+        for tool in project.tools.split(','):
+            tool = tool.strip()
+            if tool != '':
+                all_tools.append(tool)
 
     #tools that where found by the matcher
     found_tools = cvTransformer.last_found_tools
@@ -116,14 +120,18 @@ def final(solitan):
 
     # add the tools that where added bij the user and are not already in the listing software file
     with open('data/ds_job_listing_software.csv', 'a', newline='') as f_object:
+
+
         writer_object = writer(f_object)
         for tool in all_tools:
+            #add tool if its not already in file
             if tool not in found_tools:
                 list_data = [tool]
                 writer_object.writerow(list_data)
         f_object.close()
 
-    print("reloading cvs file")
+    cvTransformer.reload_small()
+
 
 
 def addPersonal(solitan):
