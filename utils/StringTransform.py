@@ -7,8 +7,16 @@ def addItemToString(string, item):
         string += item
     else:
         string += ', ' + item
-
+    return string
 
 def addItemsToString(string, items):
     for item in items:
-        addItemToString(string, item)
+        string = addItemToString(string, item)
+    return string
+
+def objectArrayToSTring(array):
+    result = ""
+    for object in array:
+        result += str(object)
+        result += '\n\n'
+    return result

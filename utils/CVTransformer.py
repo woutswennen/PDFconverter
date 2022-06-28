@@ -6,7 +6,7 @@ from tika import parser
 import pandas as pd
 import csv
 
-from utils.StringTransform import addItemsToString
+from utils.StringTransform import addItemsToString, addItemToString, objectArrayToSTring
 
 
 class CVTransformer:
@@ -98,7 +98,7 @@ class CVTransformer:
         doc = self.nlp(self.cv_in_sections['Work history'])
         matches = self.matcher_dates(doc)
         if len(matches) > 0:
-            date_matches = self.filter_matches_by_longest_string(matches)
+            date_matches = filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
                 workExperience = WorkExperience()
                 match_id, start, end = date_matches[i]
@@ -120,8 +120,9 @@ class CVTransformer:
         self.solitan.education = list()
         doc = self.nlp(self.cv_in_sections['Education'])
         matches = self.matcher_dates(doc)
+        educations = []
         if len(matches) > 0:
-            date_matches = self.filter_matches_by_longest_string(matches)
+            date_matches = filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
                 match_id, start, end = date_matches[i]
                 education = Education()
@@ -139,13 +140,15 @@ class CVTransformer:
                 else:
                     span_title = span_education_description
                 education.title, education.institution = span_title.strip("— .").split(',')
-                self.solitan.education.append(education)
+                educations.append(education)
+
+        self.solitan.education = educations
 
     def get_projects(self):
         doc = self.nlp(self.cv_in_sections['Projects'])
         matches = self.matcher_dates(doc)
         if len(matches) > 0:
-            date_matches = self.filter_matches_by_longest_string(matches)
+            date_matches = filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
                 project = Project()
                 match_id, start, end = date_matches[i]
@@ -154,18 +157,6 @@ class CVTransformer:
                     project.start_date, project.end_date = span_date  # The matched span
                 else:
                     project.start_date = span_date[0]
-        date_matches = self.filter_matches_by_longest_string(self.matcher_dates(doc))
-
-        # these will be the tools found without the client changing them in the UI
-        tools_result = []
-        for i in range(0, len(date_matches)):
-            project = Project()
-            match_id, start, end = date_matches[i]
-            span_date = doc[start:end].text.split('—')
-            if len(span_date) > 1:
-                project.start_date, project.end_date = span_date  # The matched span
-            else:
-                project.start_date = span_date[0]
 
                 if i < len(date_matches) - 1:
                     span_project_description = doc[end:date_matches[i + 1][1]].text.splitlines()
@@ -175,27 +166,24 @@ class CVTransformer:
                 project.tasks = " ".join(span_project_description)
                 # check methodologies in tasks
                 if 'scrum' in project.tasks.lower():
-                    project.methodologies.append('Scrum')
+                    project.methodologies = addItemToString(project.methodologies, 'Scrum')
                 if 'devops' in project.tasks.lower():
-                    project.methodologies.append('DevOps')
+                    project.methodologies = addItemToString(project.methodologies, 'DevOps')
                 if 'agile' in project.tasks.lower():
-                    project.methodologies.append('Agile')
+                    project.methodologies = addItemToString(project.methodologies, 'Agile')
                 if 'waterfall' in project.tasks.lower():
-                    project.methodologies.append('Waterfall')
+                    project.methodologies = addItemToString(project.methodologies, 'Waterfall')
 
                 # #check tools in tasks
-                project.found_tools = self.getProjectTools(project.tasks)
-                addItemsToString(project.tools, project.found_tools)
+                project.tools = addItemsToString(project.tools, self.getProjectTools(project.tasks))
                 # add new project object to projects list
-                print('projectxd')
-                print(str(project))
                 self.solitan.projects.append(project)
 
     def get_certificates(self):
         doc = self.nlp(self.cv_in_sections['Certificates'])
         matches = self.matcher_dates(doc)
         if len(matches) > 0:
-            date_matches = self.filter_matches_by_longest_string(matches)
+            date_matches = filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
                 certification = Certification()
                 match_id, start, end = date_matches[i]
@@ -236,7 +224,9 @@ class CVTransformer:
             skill.year_exp = span_date
             self.solitan.tech_skills.append(skill)
 
-        self.solitan.man_skills = self.cv_in_sections['Strengths'].splitlines()
+        man_skills_array = self.cv_in_sections['Strengths'].splitlines()
+        man_skills_array = [skill for skill in man_skills_array if skill != '']
+        self.solitan.man_skills = addItemsToString(self.solitan.man_skills, man_skills_array)
 
     def get_languages(self):
         doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
@@ -295,11 +285,11 @@ class CVTransformer:
         self.add_small()
 
 
-    def filter_matches_by_longest_string(self, matches):
-        filtered_matches = []
-        for i in range(0, len(matches) - 1):
-            match_id, start, end = matches[i]
-            if not start >= matches[i + 1][1] and end <= matches[i + 1][2]:
-                filtered_matches.append(matches[i])
-        filtered_matches.append(matches[-1])
-        return filtered_matches
+def filter_matches_by_longest_string(matches):
+    filtered_matches = []
+    for i in range(0, len(matches) - 1):
+        match_id, start, end = matches[i]
+        if not start >= matches[i + 1][1] and end <= matches[i + 1][2]:
+            filtered_matches.append(matches[i])
+    filtered_matches.append(matches[-1])
+    return filtered_matches
