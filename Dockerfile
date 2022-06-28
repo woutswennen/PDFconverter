@@ -34,4 +34,4 @@ RUN ls -lah /usr/lib/python3/dist-packages/
 
 EXPOSE 8501
 
-CMD streamlit run app.py --server.port $PORT
+CMD sudo streamlit run app.py --server.port $PORT
