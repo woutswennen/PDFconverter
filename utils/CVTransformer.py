@@ -18,6 +18,7 @@ class CVTransformer:
         self.matcher_dates = Matcher(self.nlp.vocab)
         self.matcher_lower = Matcher(self.nlp.vocab)
         self.matcher_duration = Matcher(self.nlp.vocab)
+        self.matcher_year = Matcher(self.nlp.vocab)
 
         pattern1 = [{"TEXT": {"REGEX": '^[0-9]{1,2}/[0-9]{4}—[0-9]{1,2}/[0-9]{4}$'}}]
         pattern2 = [{"TEXT": {"REGEX": '^[0-9]{1,2}/[0-9]{4}'}},
@@ -31,7 +32,8 @@ class CVTransformer:
 
         pattern_lower = [{"TEXT": {"REGEX": '[A-Z]*[a-z]+'}}]
 
-        self.matcher_dates.add('Date', [pattern1, pattern2, pattern3, pattern4])
+        self.matcher_dates.add('Date', [pattern1, pattern2, pattern3])
+        self.matcher_year.add('YEAR', [pattern4])
         self.matcher_lower.add('Lower case text', [pattern_lower])
         self.matcher_duration.add('DURATION', [pattern5])
 
@@ -116,7 +118,7 @@ class CVTransformer:
     def get_education(self):
         self.solitan.education = list()
         doc = self.nlp(self.cv_in_sections['Education'])
-        matches = self.matcher_dates(doc)
+        matches = self.matcher_year(doc)
         if len(matches) > 0:
             date_matches = filter_matches_by_longest_string(matches)
             for i in range(0, len(date_matches)):
@@ -143,6 +145,7 @@ class CVTransformer:
         matches = self.matcher_dates(doc)
         if len(matches) > 0:
             date_matches = filter_matches_by_longest_string(matches)
+            print(doc)
             for i in range(0, len(date_matches)):
                 project = Project()
                 match_id, start, end = date_matches[i]
