@@ -15,11 +15,11 @@ class Solitan:
 
         self.certifications = []
         self.workExperience = []
-        self.education = []
+        self.education = ""
         self.projects = []
         self.languages = {}
-        self.other_skills = []
-        self.man_skills = []
+        self.other_skills = ""
+        self.man_skills = ""
         self.tech_skills = []
 
     def __str__(self):
@@ -55,8 +55,8 @@ class Solitan:
         self.education = []
         self.projects = []
         self.languages = {}
-        self.other_skills = []
-        self.man_skills = []
+        self.other_skills = ""
+        self.man_skills = ""
         self.tech_skills = []
         print('Solitan to zero')
 
@@ -101,17 +101,30 @@ class Project:
         self.client = ""
         self.role = ""
         self.tasks = ""
-        self.tools = []
+        self.tools = ""
+        self.found_tools = []
         self.environment = ""
-        self.methodologies = []
+        self.methodologies = ""
 
     def __repr__(self):
-        return f"""\n
-        Role = {self.role}
-        Client = {self.client}
-        Start date = {self.start_date}
-        End date = {self.end_date}
-        Tasks = {self.tasks}\n"""
+        result = ''
+        if self.role != '':
+            result += f'\nRole = {self.role}'
+        if self.client != '':
+            result += f'\nClient = {self.client}'
+        if self.start_date != '':
+            result += f'\nStart date = {self.start_date}'
+        if self.end_date != '':
+            result += f'\nEnd date = {self.end_date}'
+        if self.tasks != '':
+            result += f'\nTasks = {self.tasks}'
+        if self.methodologies != '':
+            result += f'\nMethodologies = {self.methodologies}'
+        if self.tools != '':
+            result += f'\nTools = {self.tools}'
+        if self.environment != '':
+            result += f'\nEnvironment = {self.environment}'
+        return result
 
 
 class Certification:
@@ -123,12 +136,18 @@ class Certification:
         self.reference = ""
 
     def __repr__(self):
-        return f"""\n
-        Certification : {self.cert_title}
-        Start date = {self.start_date}
-        End date = {self.end_date}
-        Technology = {self.technology}
-        Reference = {self.reference}\n"""
+        result = ''
+        if self.cert_title != '':
+            result += f'\n\tCertification = {self.cert_title}'
+        if self.start_date != '':
+            result += f'\n\tStart date = {self.start_date}'
+        if self.end_date != '':
+            result += f'\n\tEnd date = {self.end_date}'
+        if self.technology != '':
+            result += f'\n\tTechnology = {self.technology}'
+        if self.reference != '':
+            result += f'\n\tReference = {self.reference}'
+        return result
 
 
 class Skill:
@@ -146,10 +165,10 @@ class Language:
         self.language = language
         self.spoken_level = level
         self.written_level = level
-        self.reading_level = level
+        self.comprehension_level = level
 
-    def __repr__(self):
+    def __str__(self):
         return f"""\n{self.language}\n
         Spoken level: {self.spoken_level}\n
         Written level: {self.written_level}\n
-        Reading level: {self.reading_level}.\n"""
+        Reading level: {self.reading_comprehension}.\n"""

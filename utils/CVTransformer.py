@@ -6,6 +6,8 @@ from tika import parser
 import pandas as pd
 import csv
 
+from utils.StringTransform import addItemsToString, addItemToString, objectArrayToSTring
+
 
 class CVTransformer:
     def __init__(self):
@@ -14,6 +16,8 @@ class CVTransformer:
         self.solitan = Solitan()
         self.nlp = spacy.load("en_core_web_lg")
         self.nlp.get_pipe("ner").labels
+        #these will be the all the tools found without the client changing them in the UI
+        self.last_found_tools = []
 
         self.matcher_dates = Matcher(self.nlp.vocab)
         self.matcher_lower = Matcher(self.nlp.vocab)
@@ -38,8 +42,6 @@ class CVTransformer:
         self.matcher_duration.add('DURATION', [pattern5])
 
         self.matcher = PhraseMatcher(self.nlp.vocab, attr='LOWER')
-        # need this to see what tools matcher found
-        self.last_found_tools = []
         self.add_small()
         self.add_big()
 
@@ -118,6 +120,7 @@ class CVTransformer:
     def get_education(self):
         self.solitan.education = list()
         doc = self.nlp(self.cv_in_sections['Education'])
+        educations = []
         matches = self.matcher_year(doc)
         if len(matches) > 0:
             date_matches = filter_matches_by_longest_string(matches)
@@ -138,14 +141,16 @@ class CVTransformer:
                 else:
                     span_title = span_education_description
                 education.title, education.institution = span_title.strip("— .").split(',')
-                self.solitan.education.append(education)
+                educations.append(education)
+
+        self.solitan.education = educations
 
     def get_projects(self):
         doc = self.nlp(self.cv_in_sections['Projects'])
         matches = self.matcher_dates(doc)
+        self.last_found_tools = []
         if len(matches) > 0:
             date_matches = filter_matches_by_longest_string(matches)
-            print(doc)
             for i in range(0, len(date_matches)):
                 project = Project()
                 match_id, start, end = date_matches[i]
@@ -163,16 +168,19 @@ class CVTransformer:
                 project.tasks = " ".join(span_project_description)
                 # check methodologies in tasks
                 if 'scrum' in project.tasks.lower():
-                    project.methodologies.append('Scrum')
+                    project.methodologies = addItemToString(project.methodologies, 'Scrum')
                 if 'devops' in project.tasks.lower():
-                    project.methodologies.append('DevOps')
+                    project.methodologies = addItemToString(project.methodologies, 'DevOps')
                 if 'agile' in project.tasks.lower():
-                    project.methodologies.append('Agile')
+                    project.methodologies = addItemToString(project.methodologies, 'Agile')
                 if 'waterfall' in project.tasks.lower():
-                    project.methodologies.append('Waterfall')
+                    project.methodologies = addItemToString(project.methodologies, 'Waterfall')
 
+
+                project_tools = self.getProjectTools(project.tasks)
+                self.last_found_tools += project_tools
                 # #check tools in tasks
-                project.tools = self.getProjectTools(project.tasks)
+                project.tools = addItemsToString(project.tools, project_tools)
                 # add new project object to projects list
                 self.solitan.projects.append(project)
 
@@ -221,7 +229,11 @@ class CVTransformer:
             skill.year_exp = span_date
             self.solitan.tech_skills.append(skill)
 
-        self.solitan.man_skills = self.cv_in_sections['Strengths'].splitlines()
+        man_skills_array = self.cv_in_sections['Strengths'].splitlines()
+        man_skills_array = [skill for skill in man_skills_array if skill != '']
+        self.solitan.man_skills = addItemsToString(self.solitan.man_skills, man_skills_array)
+
+
 
     def get_languages(self):
         doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
@@ -229,6 +241,33 @@ class CVTransformer:
             span_language, span_level = line.split(' ', 1)
             language = Language(span_language, span_level)
             self.solitan.languages[span_language] = language
+
+
+
+    def getProjectTools(self, description):
+        project_description = self.nlp(description)
+
+        # found matches has the places of where there where matches found
+        found_matches = self.matcher(project_description)
+        found_tools = []
+
+        # for every match search the word and add it to found tools if not already in there
+
+        for match_id, start, end in found_matches:
+            string_id = self.nlp.vocab.strings[match_id]
+            span = project_description[start:end]
+            if span.text.upper() not in (tool.upper() for tool in found_tools):
+                found_tools.append(span.text)
+
+        return found_tools
+
+    def reload_small(self):
+        self.matcher.remove('data science')
+        self.add_small()
+
+    def reload_big(self):
+        self.matcher.remove('software')
+        self.add_small()
 
     def add_small(self):
         # open small csv and add tools to list
@@ -253,32 +292,6 @@ class CVTransformer:
         # add small and big list patterns to the matcher
 
         self.matcher.add('software', None, *phrase_patterns_big_list)
-
-    def getProjectTools(self, description):
-        project_description = self.nlp(description)
-
-        # found matches has the places of where there where matches found
-        found_matches = self.matcher(project_description)
-        found_tools = []
-
-        # for every match search the word and add it to found tools if not already in there
-
-        for match_id, start, end in found_matches:
-            string_id = self.nlp.vocab.strings[match_id]
-            span = project_description[start:end]
-            if span.text.upper() not in (tool.upper() for tool in found_tools):
-                found_tools.append(span.text)
-
-        last_found_tools = found_tools
-        return found_tools
-
-    def reload_small(self):
-        self.matcher.remove('data science')
-        self.add_small()
-
-    def reload_big(self):
-        self.matcher.remove('software')
-        self.add_small()
 
 
 def filter_matches_by_longest_string(matches):
