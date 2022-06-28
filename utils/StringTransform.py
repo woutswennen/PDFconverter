@@ -18,5 +18,5 @@ def objectArrayToSTring(array):
     result = ""
     for object in array:
         result += str(object)
-        result += '\n\n'
+        result += '\n'
     return result

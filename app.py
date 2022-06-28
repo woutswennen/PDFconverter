@@ -248,9 +248,9 @@ def addLanguages(solitan):
         solitan.languages['Dutch'].written_level = st.selectbox('Dutch writen', scale, index=dutch_idx)
         solitan.languages['English'].written_level = st.selectbox('English writen', scale, index=english_idx)
     with compre:
-        solitan.languages['French'].reading_level = st.selectbox('French comprehension', scale, index=french_idx)
-        solitan.languages['Dutch'].reading_level = st.selectbox('Dutch comprehension', scale, index=dutch_idx)
-        solitan.languages['English'].reading_level = st.selectbox('English comprehension', scale, index=english_idx)
+        solitan.languages['French'].reading_comprehension = st.selectbox('French comprehension', scale, index=french_idx)
+        solitan.languages['Dutch'].reading_comprehension = st.selectbox('Dutch comprehension', scale, index=dutch_idx)
+        solitan.languages['English'].reading_comprehension = st.selectbox('English comprehension', scale, index=english_idx)
 
 
 def addProfExper(solitan):

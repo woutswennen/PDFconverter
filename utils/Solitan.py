@@ -165,10 +165,10 @@ class Language:
         self.language = language
         self.spoken_level = level
         self.written_level = level
-        self.reading_level = level
+        self.comprehension_level = level
 
-    def __repr__(self):
+    def __str__(self):
         return f"""\n{self.language}\n
         Spoken level: {self.spoken_level}\n
         Written level: {self.written_level}\n
-        Reading level: {self.reading_level}.\n"""
+        Reading level: {self.reading_comprehension}.\n"""
