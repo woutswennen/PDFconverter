@@ -136,7 +136,7 @@ class Certification:
         self.reference = ""
 
     def __repr__(self):
-        result = '[\n'
+        result = ''
         if self.cert_title != '':
             result += f'\n\tCertification = {self.cert_title}'
         if self.start_date != '':
@@ -147,7 +147,6 @@ class Certification:
             result += f'\n\tTechnology = {self.technology}'
         if self.reference != '':
             result += f'\n\tReference = {self.reference}'
-        result += '\n]'
         return result
 
 
