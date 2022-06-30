@@ -138,15 +138,16 @@ class Certification:
     def __repr__(self):
         result = ''
         if self.cert_title != '':
-            result += f'\n\tCertification = {self.cert_title}'
+            result += f'\nCertification = {self.cert_title}'
         if self.start_date != '':
-            result += f'\n\tStart date = {self.start_date}'
+            result += f'\nStart date = {self.start_date}'
         if self.end_date != '':
-            result += f'\n\tEnd date = {self.end_date}'
+            result += f'\nEnd date = {self.end_date}'
         if self.technology != '':
-            result += f'\n\tTechnology = {self.technology}'
+            result += f'\nTechnology = {self.technology}'
         if self.reference != '':
-            result += f'\n\tReference = {self.reference}'
+            self.reference = self.reference.replace('\n',' ')
+            result += f"\nReference = {self.reference}"
         return result
 
 
