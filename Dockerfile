@@ -7,7 +7,7 @@ ENV LANG=en_US.UTF-8
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -q -y openjdk-8-jdk python3-pip libsnappy-dev language-pack-en supervisor && \
-    apt install python3.8-venv \
+    apt install python3.8-venv
 
 EXPOSE 9000
 EXPOSE 80
