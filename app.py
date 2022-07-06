@@ -4,18 +4,16 @@
 import os
 import random
 from _csv import writer
-from ast import literal_eval
 
-import streamlit as st
 import pandas as pd
 import datetime
-from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode
+from st_aggrid import AgGrid, DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
-import utils.fillTemplate as fill
-from utils.CVTransformer import CVTransformer
-from utils.Output import addExTable
-from utils.Solitan import Language, Education, Certification, WorkExperience, Project, Skill, Solitan
+import backend.utils.fillTemplate as fill
+from backend.utils.CVTransformer import CVTransformer
+from backend.utils.Output import addExTable
+from backend.utils.Solitan import Language
 
 
 @st.cache(allow_output_mutation=True)
@@ -56,15 +54,12 @@ def main(cvTransformer=cvTransformer):
         save_uploadedfile(uploadedfiles)
 
         st.subheader("All templates")
-        for file in os.listdir('assets/templates'):
+        for file in os.listdir('backend/assets/templates'):
             st.write(file)
             st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
 
 
-def save_uploadedfile(uploadedfile):
-    with open(os.path.join("assets/templates", uploadedfile.name), "wb") as f:
-        f.write(uploadedfile.getbuffer())
-        return st.success("Saved File:{} to assets/templates".format(uploadedfile.name))
+
 
 
 def removeTemplateFile(filename):
@@ -87,9 +82,9 @@ def create_form(solitan):
 
         addSkills(solitan)
 
-        input_path = 'assets/templates/cv_template.docx'
-        inbetween_path = 'assets/templates/semi_filled_template.docx'
-        output_path = 'assets/templates/filled_template.docx'
+        input_path = 'backend/assets/templates/cv_template.docx'
+        inbetween_path = 'backend/assets/templates/semi_filled_template.docx'
+        output_path = 'backend/assets/templates/filled_template.docx'
 
         if st.form_submit_button("Render"):
             addExTable(input_path, inbetween_path, solitan)
@@ -108,19 +103,18 @@ def final(solitan):
 
     # list of all the project's tools thats going to render in the word doc
     all_tools = []
-    if type(solitan.projects[0]) == Project:
-        for project in solitan.projects:
-            for tool in project.tools.split(','):
-                tool = tool.strip()
-                if tool != '':
-                    all_tools.append(tool)
+    for project in solitan.projects:
+        for tool in project.tools.split(','):
+            tool = tool.strip()
+            if tool != '':
+                all_tools.append(tool)
 
     #tools that where found by the matcher
     found_tools = cvTransformer.last_found_tools
 
 
     # add the tools that where added bij the user and are not already in the listing software file
-    with open('data/ds_job_listing_software.csv', 'a', newline='') as f_object:
+    with open('backend/data/ds_job_listing_software.csv', 'a', newline='') as f_object:
 
 
         writer_object = writer(f_object)
@@ -191,45 +185,41 @@ def addProfRef(solitan):
 
 def addEducation(solitan):
     st.subheader("Education")
-    if solitan.education[0].__class__ != str:
-        df2 = pd.DataFrame([[e.title, e.end_date, e.institution, e.education_description] for e in solitan.education],
-                           columns=['title', 'end_date', 'institution', 'education_description'])
-        # st.dataframe(data=df)
+    df2 = pd.DataFrame([[e.title, e.end_date, e.institution, e.education_description] for e in solitan.education],
+                       columns=['title', 'end_date', 'institution', 'education_description'])
+    # st.dataframe(data=df)
 
-        gd2 = GridOptionsBuilder.from_dataframe(df2)
-        gd2.configure_default_column(editable=True)
-        gd2.configure_auto_height(False)
-        gridoptions2 = gd2.build()
-        grid_response = AgGrid(df2, gridOptions=gridoptions2,
-                               data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
-        for index, row in df2.iterrows():
-            solitan.education[index].title = row['title']
-            solitan.education[index].end_date = row['end_date']
-            solitan.education[index].institution = row['institution']
-            solitan.education[index].education_description = row['education_description']
-    else:
-        st.write(solitan.education[0])
+    gd2 = GridOptionsBuilder.from_dataframe(df2)
+    gd2.configure_default_column(editable=True)
+    gd2.configure_auto_height(False)
+    gridoptions2 = gd2.build()
+    grid_response = AgGrid(df2, gridOptions=gridoptions2,
+                           data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
+    for index, row in df2.iterrows():
+        solitan.education[index].title = row['title']
+        solitan.education[index].end_date = row['end_date']
+        solitan.education[index].institution = row['institution']
+        solitan.education[index].education_description = row['education_description']
+
     st.subheader("Certification")
-    if solitan.certifications[0].__class__ != str:
-        df3 = pd.DataFrame(
-            [[c.start_date, c.end_date, c.cert_title, c.technology] for c in solitan.certifications],
-            columns=['start_date', 'end_date', 'cert_title', 'technology'])
+    df3 = pd.DataFrame(
+        [[c.start_date, c.end_date, c.cert_title, c.technology] for c in solitan.certifications],
+        columns=['start_date', 'end_date', 'cert_title', 'technology'])
+    # st.dataframe(data=df)
 
-        gd3 = GridOptionsBuilder.from_dataframe(df3)
-        gd3.configure_default_column(editable=True)
-        gd3.configure_auto_height(False)
-        gridoptions3 = gd3.build()
-        grid_response3 = AgGrid(df3, gridOptions=gridoptions3,
-                                data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
-        df = grid_response3['data']
+    gd3 = GridOptionsBuilder.from_dataframe(df3)
+    gd3.configure_default_column(editable=True)
+    gd3.configure_auto_height(False)
+    gridoptions3 = gd3.build()
+    grid_response3 = AgGrid(df3, gridOptions=gridoptions3,
+                            data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
+    df = grid_response3['data']
+    for index, row in df3.iterrows():
+        solitan.certifications[index].start_date = row['start_date']
+        solitan.certifications[index].end_date = row['end_date']
+        solitan.certifications[index].cert_title = row['cert_title']
+        solitan.certifications[index].technology = row['technology']
 
-        for index, row in df3.iterrows():
-            solitan.certifications[index].start_date = row['start_date']
-            solitan.certifications[index].end_date = row['end_date']
-            solitan.certifications[index].cert_title = row['cert_title']
-            solitan.certifications[index].technology = row['technology']
-    else:
-        st.write(solitan.certifications[0])
 
 def addLanguages(solitan):
     st.subheader("Languages")
@@ -246,106 +236,89 @@ def addLanguages(solitan):
     else:
         solitan.languages['Dutch'] = Language('Dutch', 'None')
         dutch_idx = 0
-    if 'English' in solitan.languages:
+    if 'French' in solitan.languages:
         english_idx = scale.index(solitan.languages['English'].spoken_level)
     else:
         solitan.languages['English'] = Language('English', 'None')
         english_idx = 0
 
     with spoken:
-        if 'French' in solitan.languages:
-            solitan.languages['French'].spoken_level = st.selectbox('French spoken', scale, index=french_idx)
-        if 'Dutch' in solitan.languages:
-            solitan.languages['Dutch'].spoken_level = st.selectbox('Dutch spoken', scale, index=dutch_idx)
-        if 'English' in solitan.languages:
-            solitan.languages['English'].spoken_level = st.selectbox('English spoken', scale, index=english_idx)
+        solitan.languages['French'].spoken_level = st.selectbox('French spoken', scale, index=french_idx)
+        solitan.languages['Dutch'].spoken_level = st.selectbox('Dutch spoken', scale, index=dutch_idx)
+        solitan.languages['English'].spoken_level = st.selectbox('English spoken', scale, index=english_idx)
     with written:
-        if 'French' in solitan.languages:
-            solitan.languages['French'].written_level = st.selectbox('French writen', scale, index=french_idx)
-        if 'Dutch' in solitan.languages:
-            solitan.languages['Dutch'].written_level = st.selectbox('Dutch writen', scale, index=dutch_idx)
-        if 'English' in solitan.languages:
-            solitan.languages['English'].written_level = st.selectbox('English writen', scale, index=english_idx)
+        solitan.languages['French'].written_level = st.selectbox('French writen', scale, index=french_idx)
+        solitan.languages['Dutch'].written_level = st.selectbox('Dutch writen', scale, index=dutch_idx)
+        solitan.languages['English'].written_level = st.selectbox('English writen', scale, index=english_idx)
     with compre:
-        if 'French' in solitan.languages:
-            solitan.languages['French'].reading_comprehension = st.selectbox('French comprehension', scale, index=french_idx)
-        if 'Dutch' in solitan.languages:
-            solitan.languages['Dutch'].reading_comprehension = st.selectbox('Dutch comprehension', scale, index=dutch_idx)
-        if 'English' in solitan.languages:
-            solitan.languages['English'].reading_comprehension = st.selectbox('English comprehension', scale, index=english_idx)
+        solitan.languages['French'].reading_comprehension = st.selectbox('French comprehension', scale, index=french_idx)
+        solitan.languages['Dutch'].reading_comprehension = st.selectbox('Dutch comprehension', scale, index=dutch_idx)
+        solitan.languages['English'].reading_comprehension = st.selectbox('English comprehension', scale, index=english_idx)
 
 
 def addProfExper(solitan):
     st.subheader('Professional Experience')
-    if solitan.workExperience[0].__class__ != str:
-        df2 = pd.DataFrame(
-            [[w.start_date, w.end_date, w.job_title, w.company, w.job_description] for w in solitan.workExperience],
-            columns=['start_date', 'end_date', 'job_title', 'company', 'job_description'])
-        # st.dataframe(data=df)
+    df2 = pd.DataFrame(
+        [[w.start_date, w.end_date, w.job_title, w.company, w.job_description] for w in solitan.workExperience],
+        columns=['start_date', 'end_date', 'job_title', 'company', 'job_description'])
+    # st.dataframe(data=df)
 
-        gd2 = GridOptionsBuilder.from_dataframe(df2)
-        gd2.configure_default_column(editable=True)
-        gd2.configure_auto_height(False)
-        gridoptions2 = gd2.build()
-        grid_response = AgGrid(df2, gridOptions=gridoptions2,
-                               data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
-        for index, row in df2.iterrows():
-            solitan.workExperience[index].start_date = row['start_date']
-            solitan.workExperience[index].end_date = row['end_date']
-            solitan.workExperience[index].job_title = row['job_title']
-            solitan.workExperience[index].company = row['company']
-            solitan.workExperience[index].job_description = row['job_description']
-            # TODO
-            solitan.workExperience[index].client = "client"
-    else:
-        st.write(solitan.workExperience[0])
+    gd2 = GridOptionsBuilder.from_dataframe(df2)
+    gd2.configure_default_column(editable=True)
+    gd2.configure_auto_height(False)
+    gridoptions2 = gd2.build()
+    grid_response = AgGrid(df2, gridOptions=gridoptions2,
+                           data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
+    for index, row in df2.iterrows():
+        solitan.workExperience[index].start_date = row['start_date']
+        solitan.workExperience[index].end_date = row['end_date']
+        solitan.workExperience[index].job_title = row['job_title']
+        solitan.workExperience[index].company = row['company']
+        solitan.workExperience[index].job_description = row['job_description']
+        # TODO
+        solitan.workExperience[index].client = "client"
+
     st.subheader('Projects')
-    if solitan.projects[0].__class__ != str:
-        df4 = pd.DataFrame(
-            [[p.start_date, p.end_date, p.client, p.role, p.tasks, p.methodologies, p.tools] for p in solitan.projects],
-            columns=['start_date', 'end_date', 'client', 'role', 'tasks', 'methodologies', 'tools'])
-        # st.dataframe(data=df)
+    df4 = pd.DataFrame(
+        [[p.start_date, p.end_date, p.client, p.role, p.tasks, p.methodologies, p.tools] for p in solitan.projects],
+        columns=['start_date', 'end_date', 'client', 'role', 'tasks', 'methodologies', 'tools'])
+    # st.dataframe(data=df)
 
-        gd4 = GridOptionsBuilder.from_dataframe(df4)
-        gd4.configure_default_column(editable=True)
-        gd4.configure_auto_height(False)
-        gridoptions4 = gd4.build()
-        grid_response4 = AgGrid(df4, gridOptions=gridoptions4, data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
+    gd4 = GridOptionsBuilder.from_dataframe(df4)
+    gd4.configure_default_column(editable=True)
+    gd4.configure_auto_height(False)
+    gridoptions4 = gd4.build()
+    grid_response4 = AgGrid(df4, gridOptions=gridoptions4, data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
 
-        df4 = grid_response4['data']
-        for index, row in df4.iterrows():
-            solitan.projects[index].start_date = row['start_date']
-            solitan.projects[index].end_date = row['end_date']
-            solitan.projects[index].role = row['role']
-            solitan.projects[index].client = row['client']
-            solitan.projects[index].tasks = row['tasks']
-            solitan.projects[index].tools = row['tools']
-    else:
-        st.write(solitan.projects[0])
+    df4 = grid_response4['data']
+    for index, row in df4.iterrows():
+        solitan.projects[index].start_date = row['start_date']
+        solitan.projects[index].end_date = row['end_date']
+        solitan.projects[index].role = row['role']
+        solitan.projects[index].client = row['client']
+        solitan.projects[index].tasks = row['tasks']
+        solitan.projects[index].tools = row['tools']
+
 
 def addSkills(solitan):
     solitan.man_skills = st.text_area('Management Skills', value=solitan.man_skills)
     st.write('Technical Skills')
+    df = pd.DataFrame(
+        [[s.skill, s.level, s.year_exp] for s in solitan.tech_skills],
+        columns=['skill', 'level', 'years_experience'])
+    # st.dataframe(data=df)
 
-    if solitan.tech_skills[0].__class__ != str:
-        df = pd.DataFrame(
-            [[s.skill, s.level, s.year_exp] for s in solitan.tech_skills],
-            columns=['skill', 'level', 'years_experience'])
-        # st.dataframe(data=df)
-
-        gd = GridOptionsBuilder.from_dataframe(df)
-        gd.configure_default_column(editable=True)
-        gd.configure_auto_height(False)
-        gridoptions = gd.build()
-        grid_response = AgGrid(df, gridOptions=gridoptions,
-                               data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
-        df = grid_response['data']
-        for index, row in df.iterrows():
-            solitan.tech_skills[index].skill = row['skill']
-            solitan.tech_skills[index].level = row['level']
-            solitan.tech_skills[index].year_exp = row['years_experience']
-    else:
-        st.write(solitan.tech_skills[0])
+    gd = GridOptionsBuilder.from_dataframe(df)
+    gd.configure_default_column(editable=True)
+    gd.configure_auto_height(False)
+    gridoptions = gd.build()
+    grid_response = AgGrid(df, gridOptions=gridoptions,
+                           data_return_mode=DataReturnMode.FILTERED_AND_SORTED)
+    df = grid_response['data']
+    for index, row in df.iterrows():
+        solitan.tech_skills[index].skill = row['skill']
+        solitan.tech_skills[index].level = row['level']
+        solitan.tech_skills[index].year_exp = row['years_experience']
 
     solitan.other_skills = st.text_area('Others', value=solitan.other_skills)
 

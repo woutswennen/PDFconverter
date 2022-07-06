@@ -1,8 +1,6 @@
-import os, sys
 from docxtpl import DocxTemplate
-from docx import Document
 
-from utils.StringTransform import objectArrayToSTring
+from StringTransform import objectArrayToSTring
 
 
 def argenta(template_path, output_path, solitan):

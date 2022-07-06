@@ -6,7 +6,9 @@ from tika import parser
 import pandas as pd
 import csv
 
-from utils.StringTransform import addItemsToString, addItemToString, objectArrayToSTring
+
+from utils.StringTransform import addItemsToString, addItemToString
+
 
 
 class CVTransformer:
@@ -43,9 +45,11 @@ class CVTransformer:
 
         self.matcher = PhraseMatcher(self.nlp.vocab, attr='LOWER')
         self.add_small()
-        self.add_big()
+        # self.add_big() TODO
+        print("important to add later")
 
     def prepare_and_extract(self, cv):
+        self.solitan = Solitan()
         self.cv = parser.from_file(cv)['content']
         self.cv = re.sub('-\n+|\ue210', '', self.cv)
         self.cv = re.sub("^[a-zA-Z0-9]*$", '', self.cv)
@@ -315,3 +319,5 @@ def filter_matches_by_longest_string(matches):
             filtered_matches.append(matches[i])
     filtered_matches.append(matches[-1])
     return filtered_matches
+
+
