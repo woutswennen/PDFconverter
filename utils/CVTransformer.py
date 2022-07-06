@@ -16,7 +16,7 @@ class CVTransformer:
         self.solitan = Solitan()
         self.nlp = spacy.load("en_core_web_lg")
         self.nlp.get_pipe("ner").labels
-        #these will be the all the tools found without the client changing them in the UI
+        # these will be the all the tools found without the client changing them in the UI
         self.last_found_tools = []
 
         self.matcher_dates = Matcher(self.nlp.vocab)
@@ -70,14 +70,14 @@ class CVTransformer:
                      'Web presence', 'Languages', 'Hobbies & passions']]
 
         doc = self.nlp(self.cv)
-        print(doc)
         phrase_matcher.add("SECTION", None, *sections)
         matches = phrase_matcher(doc)
-        for i in range(0, len(matches) - 1):
-            match_id, start, end = matches[i]
-            match_id_next, start_next, end_next = matches[i + 1]
-            self.cv_in_sections[doc[start:end].text] = doc[end:start_next].text
-        self.cv_in_sections[doc[start_next:end_next].text] = doc[end_next::].text
+        if len(matches) > 0:
+            for i in range(0, len(matches) - 1):
+                match_id, start, end = matches[i]
+                match_id_next, start_next, end_next = matches[i + 1]
+                self.cv_in_sections[doc[start:end].text] = doc[end:start_next].text
+            self.cv_in_sections[doc[start_next:end_next].text] = doc[end_next::].text
 
     def get_personal_info(self):
         cv_in_lines = self.cv.splitlines()
@@ -90,159 +90,172 @@ class CVTransformer:
                     name = cv_in_lines[i].split(' ', 1)
                     if len(name) > 1:
                         self.solitan.name, self.solitan.lastname = name
-                        self.solitan.rol = cv_in_lines[i + 1]
+                        if len(cv_in_lines) > i + 1:
+                            self.solitan.rol = cv_in_lines[i + 1]
                     else:
                         self.solitan.name = name[0]
                     break
 
     def get_work_experience(self):
-        doc = self.nlp(self.cv_in_sections['Work history'])
-        matches = self.matcher_dates(doc)
-        if len(matches) > 0:
-            date_matches = filter_matches_by_longest_string(matches)
-            for i in range(0, len(date_matches)):
-                workExperience = WorkExperience()
-                match_id, start, end = date_matches[i]
-                span_date = doc[start:end].text.split('—')
-                if len(span_date) > 1:
-                    workExperience.start_date, workExperience.end_date = span_date  # The matched span
-                else:
-                    workExperience.start_date = span_date[0]
-                if i < len(date_matches) - 1:
-                    span_jobdescription = doc[end:date_matches[i + 1][1]].text.splitlines()
-                else:
-                    span_jobdescription = doc[end::].text.splitlines()
-                workExperience.job_title, workExperience.company = span_jobdescription.pop(0).strip("— .").split(',')
+        if 'Work history' in self.cv_in_sections:
+            doc = self.nlp(self.cv_in_sections['Work history'])
+            matches = self.matcher_dates(doc)
+            if len(matches) > 0:
+                date_matches = filter_matches_by_longest_string(matches)
+                for i in range(0, len(date_matches)):
+                    workExperience = WorkExperience()
+                    match_id, start, end = date_matches[i]
+                    span_date = doc[start:end].text.split('—')
+                    if len(span_date) > 1:
+                        workExperience.start_date, workExperience.end_date = span_date  # The matched span
+                    else:
+                        workExperience.start_date = span_date[0]
+                    if i < len(date_matches) - 1:
+                        span_jobdescription = doc[end:date_matches[i + 1][1]].text.splitlines()
+                    else:
+                        span_jobdescription = doc[end::].text.splitlines()
+                    workExperience.job_title, workExperience.company = span_jobdescription.pop(0).strip("— .").split(
+                        ',')
 
-                workExperience.job_description = " ".join(span_jobdescription)
-                self.solitan.workExperience.append(workExperience)
+                    workExperience.job_description = " ".join(span_jobdescription)
+                    self.solitan.workExperience.append(workExperience)
+        else:
+            self.solitan.workExperience.append('No work experience found.')
 
     def get_education(self):
-        self.solitan.education = list()
-        doc = self.nlp(self.cv_in_sections['Education'])
-        educations = []
-        matches = self.matcher_year(doc)
-        if len(matches) > 0:
-            date_matches = filter_matches_by_longest_string(matches)
-            for i in range(0, len(date_matches)):
-                match_id, start, end = date_matches[i]
-                education = Education()
-                education.end_date = doc[start:end].text  # The matched span
-                if i < len(date_matches) - 1:
-                    span_education_description = re.sub('\n', ' ', doc[end:date_matches[i + 1][1]].text)
-                else:
-                    span_education_description = re.sub('\n', ' ', doc[end::].text)
+        if 'Education' in self.cv_in_sections:
+            self.solitan.education = list()
+            doc = self.nlp(self.cv_in_sections['Education'])
+            educations = []
+            matches = self.matcher_year(doc)
+            if len(matches) > 0:
+                date_matches = filter_matches_by_longest_string(matches)
+                for i in range(0, len(date_matches)):
+                    match_id, start, end = date_matches[i]
+                    education = Education()
+                    education.end_date = doc[start:end].text  # The matched span
+                    if i < len(date_matches) - 1:
+                        span_education_description = re.sub('\n', ' ', doc[end:date_matches[i + 1][1]].text)
+                    else:
+                        span_education_description = re.sub('\n', ' ', doc[end::].text)
 
-                education_doc = self.nlp(span_education_description)
-                lower_matches = self.matcher_lower(education_doc)
-                if len(lower_matches) > 1:
-                    span_title = education_doc[:lower_matches[0][1]].text
-                    education.education_description = education_doc[lower_matches[0][1]::].text
-                else:
-                    span_title = span_education_description
-                education.title, education.institution = span_title.strip("— .").split(',')
-                educations.append(education)
-
-        self.solitan.education = educations
+                    education_doc = self.nlp(span_education_description)
+                    lower_matches = self.matcher_lower(education_doc)
+                    if len(lower_matches) > 1:
+                        span_title = education_doc[:lower_matches[0][1]].text
+                        education.education_description = education_doc[lower_matches[0][1]::].text
+                    else:
+                        span_title = span_education_description
+                    education.title, education.institution = span_title.strip("— .").split(',')
+                    educations.append(education)
+            self.solitan.education = educations
+        else:
+            self.solitan.education.append('No education found.')
 
     def get_projects(self):
-        doc = self.nlp(self.cv_in_sections['Projects'])
-        matches = self.matcher_dates(doc)
-        self.last_found_tools = []
-        if len(matches) > 0:
-            date_matches = filter_matches_by_longest_string(matches)
-            for i in range(0, len(date_matches)):
-                project = Project()
-                match_id, start, end = date_matches[i]
-                span_date = doc[start:end].text.split('—')
-                if len(span_date) > 1:
-                    project.start_date, project.end_date = span_date  # The matched span
-                else:
-                    project.start_date = span_date[0]
+        if 'Projects' in self.cv_in_sections:
+            doc = self.nlp(self.cv_in_sections['Projects'])
+            matches = self.matcher_dates(doc)
+            self.last_found_tools = []
+            if len(matches) > 0:
+                date_matches = filter_matches_by_longest_string(matches)
+                for i in range(0, len(date_matches)):
+                    project = Project()
+                    match_id, start, end = date_matches[i]
+                    span_date = doc[start:end].text.split('—')
+                    if len(span_date) > 1:
+                        project.start_date, project.end_date = span_date  # The matched span
+                    else:
+                        project.start_date = span_date[0]
 
-                if i < len(date_matches) - 1:
-                    span_project_description = doc[end:date_matches[i + 1][1]].text.splitlines()
-                else:
-                    span_project_description = doc[end::].text.splitlines()
-                project.role, project.client = span_project_description.pop(0).strip(' —.').split(',', 1)
-                project.tasks = " ".join(span_project_description)
-                # check methodologies in tasks
-                if 'scrum' in project.tasks.lower():
-                    project.methodologies = addItemToString(project.methodologies, 'Scrum')
-                if 'devops' in project.tasks.lower():
-                    project.methodologies = addItemToString(project.methodologies, 'DevOps')
-                if 'agile' in project.tasks.lower():
-                    project.methodologies = addItemToString(project.methodologies, 'Agile')
-                if 'waterfall' in project.tasks.lower():
-                    project.methodologies = addItemToString(project.methodologies, 'Waterfall')
+                    if i < len(date_matches) - 1:
+                        span_project_description = doc[end:date_matches[i + 1][1]].text.splitlines()
+                    else:
+                        span_project_description = doc[end::].text.splitlines()
+                    project.role, project.client = span_project_description.pop(0).strip(' —.').split(',', 1)
+                    project.tasks = " ".join(span_project_description)
+                    # check methodologies in tasks
+                    if 'scrum' in project.tasks.lower():
+                        project.methodologies = addItemToString(project.methodologies, 'Scrum')
+                    if 'devops' in project.tasks.lower():
+                        project.methodologies = addItemToString(project.methodologies, 'DevOps')
+                    if 'agile' in project.tasks.lower():
+                        project.methodologies = addItemToString(project.methodologies, 'Agile')
+                    if 'waterfall' in project.tasks.lower():
+                        project.methodologies = addItemToString(project.methodologies, 'Waterfall')
 
-
-                project_tools = self.getProjectTools(project.tasks)
-                self.last_found_tools += project_tools
-                # #check tools in tasks
-                project.tools = addItemsToString(project.tools, project_tools)
-                # add new project object to projects list
-                self.solitan.projects.append(project)
+                    project_tools = self.getProjectTools(project.tasks)
+                    self.last_found_tools += project_tools
+                    # #check tools in tasks
+                    project.tools = addItemsToString(project.tools, project_tools)
+                    # add new project object to projects list
+                    self.solitan.projects.append(project)
+        else:
+            self.solitan.projects.append('No projects found.')
 
     def get_certificates(self):
-        doc = self.nlp(self.cv_in_sections['Certificates'])
-        matches = self.matcher_dates(doc)
-        if len(matches) > 0:
-            date_matches = filter_matches_by_longest_string(matches)
-            for i in range(0, len(date_matches)):
-                certification = Certification()
-                match_id, start, end = date_matches[i]
-                span_date = doc[start:end].text.split('—')
-                if len(span_date) > 1:
-                    certification.start_date, certification.end_date = span_date  # The matched span
-                else:
-                    certification.start_date = span_date[0]
-                if i < len(date_matches) - 1:
-                    span_description = doc[end:date_matches[i + 1][1]].text
-                else:
-                    span_description = doc[end::].text
+        if 'Certificates' in self.cv_in_sections:
+            doc = self.nlp(self.cv_in_sections['Certificates'])
+            matches = self.matcher_dates(doc)
+            if len(matches) > 0:
+                date_matches = filter_matches_by_longest_string(matches)
+                for i in range(0, len(date_matches)):
+                    certification = Certification()
+                    match_id, start, end = date_matches[i]
+                    span_date = doc[start:end].text.split('—')
+                    if len(span_date) > 1:
+                        certification.start_date, certification.end_date = span_date  # The matched span
+                    else:
+                        certification.start_date = span_date[0]
+                    if i < len(date_matches) - 1:
+                        span_description = doc[end:date_matches[i + 1][1]].text
+                    else:
+                        span_description = doc[end::].text
 
-                span_cert_title, certification.reference = span_description.split('\n', 1)
+                    span_cert_title, certification.reference = span_description.split('\n', 1)
 
-                certification.cert_title, certification.technology = span_cert_title.split(',')
-                self.solitan.certifications.append(certification)
+                    certification.cert_title, certification.technology = span_cert_title.split(',')
+                    self.solitan.certifications.append(certification)
+        else:
+            self.solitan.certifications.append('No certifications found')
 
     def get_skills(self):
-        doc = self.nlp(self.cv_in_sections['Skills'])
+        if 'Skills' in self.cv_in_sections:
+            doc = self.nlp(self.cv_in_sections['Skills'])
 
-        matches = self.matcher_duration(self.nlp(" ".join([token.lemma_ for token in doc])))
+            matches = self.matcher_duration(self.nlp(" ".join([token.lemma_ for token in doc])))
 
-        for i in range(0, len(matches)):
-            match_id, start, end = matches[i]
-            if i > 1:
-                span_date = doc[start: end].text
-                span_tech = doc[matches[i - 1][2] + 1:start - 1]
-                span_level = doc[start - 1]
-            else:
-                span_date = doc[start: end].text
-                span_tech = doc[0:start - 1]
-                span_level = doc[start - 1]
+            for i in range(0, len(matches)):
+                match_id, start, end = matches[i]
+                if i > 1:
+                    span_date = doc[start: end].text
+                    span_tech = doc[matches[i - 1][2] + 1:start - 1]
+                    span_level = doc[start - 1]
+                else:
+                    span_date = doc[start: end].text
+                    span_tech = doc[0:start - 1]
+                    span_level = doc[start - 1]
 
-            skill = Skill()
-            skill.skill = span_tech
-            skill.level = span_level
-            skill.year_exp = span_date
-            self.solitan.tech_skills.append(skill)
+                skill = Skill()
+                skill.skill = span_tech
+                skill.level = span_level
+                skill.year_exp = span_date
+                self.solitan.tech_skills.append(skill)
+        else:
+            self.solitan.man_skills = 'No skills found.'
 
         man_skills_array = self.cv_in_sections['Strengths'].splitlines()
         man_skills_array = [skill for skill in man_skills_array if skill != '']
         self.solitan.man_skills = addItemsToString(self.solitan.man_skills, man_skills_array)
 
 
-
     def get_languages(self):
-        doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
-        for line in doc.text.splitlines():
-            span_language, span_level = line.split(' ', 1)
-            language = Language(span_language, span_level)
-            self.solitan.languages[span_language] = language
-
-
+        if 'Languages' in self.cv_in_sections:
+            doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
+            for line in doc.text.splitlines():
+                span_language, span_level = line.split(' ', 1)
+                language = Language(span_language, span_level)
+                self.solitan.languages[span_language] = language
 
     def getProjectTools(self, description):
         project_description = self.nlp(description)
