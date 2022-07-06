@@ -22,6 +22,34 @@ class Solitan:
         self.man_skills = ""
         self.tech_skills = []
 
+    def toDict(self):
+        return{
+            'name': self.name,
+            'lastname': self.lastname,
+            'rol': self.rol,
+            'gender': self.gender,
+            'birthday': self.birthday,
+            'nationlaity':self.nationality,
+            'occupation': self.work_occupation,
+            'fitness': self.fitness,
+            'info': self.info,
+            'strengths': self.strengths,
+            'references': self.references,
+            'availability': self.availability,
+            # 'education': self.education,
+            'other_skills': self.other_skills,
+            'man_skills': self.man_skills,
+
+
+            'certifications': [c.__dict__ for c in self.certifications],
+            'work_experience': [w.__dict__ for w in self.workExperience],
+            # 'projects': [p.__dict__ for p in self.projects],
+            # 'tech_skills': [t.__dict__ for t in self.tech_skills],
+            #
+            # 'languages': {'Dutch': self.languages['Dutch'], 'English': self.languages['English'], 'French': self.languages['French']}
+        }
+
+
     def __str__(self):
         return f"""
         Name = {self.name}\n
@@ -105,6 +133,7 @@ class Project:
         self.found_tools = []
         self.environment = ""
         self.methodologies = ""
+
 
     def __repr__(self):
         result = ''

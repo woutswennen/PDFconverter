@@ -4,18 +4,16 @@
 import os
 import random
 from _csv import writer
-from ast import literal_eval
 
-import streamlit as st
 import pandas as pd
 import datetime
-from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode
+from st_aggrid import AgGrid, DataReturnMode
 from st_aggrid.grid_options_builder import GridOptionsBuilder
 
-import utils.fillTemplate as fill
-from utils.CVTransformer import CVTransformer
-from utils.Output import addExTable
-from utils.Solitan import Language
+import backend.utils.fillTemplate as fill
+from backend.utils.CVTransformer import CVTransformer
+from backend.utils.Output import addExTable
+from backend.utils.Solitan import Language
 
 
 @st.cache(allow_output_mutation=True)
@@ -56,15 +54,12 @@ def main(cvTransformer=cvTransformer):
         save_uploadedfile(uploadedfiles)
 
         st.subheader("All templates")
-        for file in os.listdir('assets/templates'):
+        for file in os.listdir('backend/assets/templates'):
             st.write(file)
             st.button("remove", on_click=removeTemplateFile(file), key=str(random.random()))
 
 
-def save_uploadedfile(uploadedfile):
-    with open(os.path.join("assets/templates", uploadedfile.name), "wb") as f:
-        f.write(uploadedfile.getbuffer())
-        return st.success("Saved File:{} to assets/templates".format(uploadedfile.name))
+
 
 
 def removeTemplateFile(filename):
@@ -87,9 +82,9 @@ def create_form(solitan):
 
         addSkills(solitan)
 
-        input_path = 'assets/templates/cv_template.docx'
-        inbetween_path = 'assets/templates/semi_filled_template.docx'
-        output_path = 'assets/templates/filled_template.docx'
+        input_path = 'backend/assets/templates/cv_template.docx'
+        inbetween_path = 'backend/assets/templates/semi_filled_template.docx'
+        output_path = 'backend/assets/templates/filled_template.docx'
 
         if st.form_submit_button("Render"):
             addExTable(input_path, inbetween_path, solitan)
@@ -119,7 +114,7 @@ def final(solitan):
 
 
     # add the tools that where added bij the user and are not already in the listing software file
-    with open('data/ds_job_listing_software.csv', 'a', newline='') as f_object:
+    with open('backend/data/ds_job_listing_software.csv', 'a', newline='') as f_object:
 
 
         writer_object = writer(f_object)
