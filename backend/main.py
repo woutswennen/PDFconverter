@@ -8,6 +8,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import uuid
 import utils.CVTransformer as CVTransformer
+import utils.fillTemplate as fillTemplate
+import utils.Output as Output
+from docx import Document
 
 app = Flask(__name__)
 
@@ -84,6 +87,14 @@ def getSolitan():
 
     string = json.dumps({"data": cvTransformer.solitan.toDict()})
     return string
+
+@app.route('/render', methods=['POST'])
+def renderFile():
+    json = request.json
+    Output.addExTable('assets/templates/cv_template.docx', 'assets/templates/semi_filled_template.docx', json)
+    fillTemplate.argenta('assets/templates/semi_filled_template.docx', 'assets/templates/filled_template.docx', json)
+
+    return {'succes': 'xd'}
 
 
 
