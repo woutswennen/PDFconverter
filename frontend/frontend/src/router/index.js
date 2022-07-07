@@ -14,6 +14,11 @@ const routes = [
    name : 'Upload',
    component : UploadPage,
  },
+  {
+   path : '/',
+   name : 'Upload',
+   component : UploadPage,
+ },
  {
    path : '/edit',
    name : 'EditPage',

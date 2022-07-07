@@ -43,6 +43,8 @@
 <experience-table/>
 <certificate-table/>
 
+<button @click="renderFile">Render</button>
+
 </div>
 </template>
 
@@ -54,6 +56,7 @@
 import { mapState } from 'vuex'
 import ExperienceTable from '../components/ExperienceTable.vue'
 import CertificateTable from '../components/CertificateTable.vue'
+import axios from 'axios'
 export default {
   components: {
     ExperienceTable,
@@ -86,6 +89,15 @@ export default {
         console.log(this.solitan.name)
         this.$store.commit('editSolitan', this.solitan);
       },
+      renderFile() {
+        axios.post("http://localhost:5000/render", this.solitan)
+        .then(response =>{
+            console.log(response)
+        })
+        .catch(error => {
+          console.error("There was an error!", error);
+        });
+      }
 
     },
 
