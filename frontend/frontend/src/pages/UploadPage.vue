@@ -54,7 +54,6 @@ export default {
         .then(response => {
           //load the solitan object into the object store.
           this.$store.dispatch("fetchSolitan");
-          console.log(this.$store.getters.getSolitan.work_experience);
           this.$refs.fileInput.value = "";
           console.log(response);
         }).catch(error => {
