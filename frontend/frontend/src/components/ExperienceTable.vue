@@ -1,8 +1,4 @@
-
-
 <template>
-    <div>
-
     <v-data-table
       :headers="headers"
       :items="experiences"
@@ -24,7 +20,7 @@
           flat
         >
 
-          <v-toolbar-title>My CRUD</v-toolbar-title>
+          <v-toolbar-title>Experiences</v-toolbar-title>
           <v-divider
             class="mx-4"
             inset
@@ -174,7 +170,6 @@
         </v-btn>
       </template>
     </v-data-table>
-    </div>
 </template>
 
 

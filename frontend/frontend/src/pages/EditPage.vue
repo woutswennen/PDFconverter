@@ -1,4 +1,5 @@
 <template>
+<div>
   <v-form
 
     ref="form"
@@ -10,6 +11,7 @@
         <v-text-field
           v-model="solitan.name"
           label="Name"
+          @blur="saveInput"
         ></v-text-field>
     </b-column>
     <b-column>
@@ -36,29 +38,13 @@
       label="Nationality"
     ></v-text-field>
   </b-form-row>
+</v-form>
 
+<experience-table/>
+<certificate-table/>
 
-
-
-    <v-btn
-      :disabled="!valid"
-      color="success"
-      class="mr-4"
-      @click="render"
-    >
-      Render
-    </v-btn>
-
-
-
-  </v-form>
+</div>
 </template>
-
-
-
-<script>
-
-</script>
 
 
 
@@ -66,14 +52,12 @@
 
 <script>
 import { mapState } from 'vuex'
-
-
+import ExperienceTable from '../components/ExperienceTable.vue'
+import CertificateTable from '../components/CertificateTable.vue'
 export default {
-  date: () => ({
-    solitan: {}
-  }),
   components: {
-
+    ExperienceTable,
+    CertificateTable,
   },
   computed: mapState(['solitan']),
 
@@ -82,10 +66,8 @@ export default {
     this.solitan = this.$store.getters.getSolitan;
   },
 
-  methods: {
-
-  },
   data: () => ({
+      solitan: {},
       valid: true,
       editedSolitan: {},
       name: '',
@@ -100,9 +82,11 @@ export default {
     }),
 
     methods: {
-      render () {
+      saveInput () {
+        console.log(this.solitan.name)
         this.$store.commit('editSolitan', this.solitan);
       },
+
     },
 
 };
