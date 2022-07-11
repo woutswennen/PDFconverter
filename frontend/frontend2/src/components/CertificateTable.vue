@@ -3,10 +3,7 @@
       :headers="headers"
       :items="certifications"
       sort-by="start_date"
-      :single-expand="singleExpand"
-      :expanded.sync="expanded"
       item-key="cert_title"
-      show-expand
       class="elevation-1"
     >
 
