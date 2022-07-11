@@ -53,8 +53,10 @@ export default {
       })
         .then(response => {
           //load the solitan object into the object store.
-          console.log("_________________")
+          this.$store.dispatch("fetchSolitan")
+          console.log(this.$store.getters.getSolitan.name)
           this.$refs.fileInput.value = "";
+
         }).catch(error => {
           console.log("File upload failed.");
           console.error(error);
