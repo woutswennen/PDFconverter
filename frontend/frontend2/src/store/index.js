@@ -23,12 +23,10 @@ export default new Vuex.Store({
   },
   actions: {
     fetchSolitan(context){
-        console.log("ewa broer")
         return fetch("http://localhost:5000/solitan")
         .then((response) => response.json())
         .then((data) => {
-          console.log(data)
-          context.commit("setSolitan", data);
+          context.commit("setSolitan", data.data);
         })
         .catch((err) => console.error(err));
     }
