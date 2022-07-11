@@ -99,12 +99,6 @@ def renderFile():
     json = request.json
     Output.addExTable('assets/templates/cv_template.docx', 'assets/templates/semi_filled_template.docx', json)
     fillTemplate.argenta('assets/templates/semi_filled_template.docx', 'assets/templates/filled_template.docx', json)
-
-    doc = Document('assets/templates/filled_template.docx')
-    f = io.StringIO()
-    doc.save(f)
-    length = f.tell()
-    f.seek(0)
     return send_from_directory(directory='assets/templates', path='filled_template.docx', as_attachment=True,
                                attachment_filename='CV_Transformed.docx')
 
