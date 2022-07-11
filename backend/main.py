@@ -5,78 +5,82 @@
 import io
 import json
 
-from flask import Flask, jsonify, request
+from flask import Flask, render_template, send_from_directory, jsonify, request
+from docx import Document
 from flask_cors import CORS
 import uuid
 import utils.CVTransformer as CVTransformer
 import utils.fillTemplate as fillTemplate
 import utils.Output as Output
-from flask import send_file
 from docx import Document
 
 app = Flask(__name__)
 
 app.config.from_object(__name__)
 
-CORS(app, resources={r"/*":{'origins':"*"}})
+CORS(app, resources={r"/*": {'origins': "*"}})
 # CORS(app, resources={r'/*':{'origins': 'http://localhost:8080',"allow_headers": "Access-Control-Allow-Origin"}})
 
 
 cvTransformer = CVTransformer.CVTransformer()
 
+
 # hello world route
 @app.route('/', methods=['GET'])
 def greetings():
-    return("Hello, world!")
+    return ("Hello, world!")
+
 
 @app.route('/shark', methods=['GET'])
 def shark():
-    return("Shark🦈!")
+    return ("Shark🦈!")
 
 
-GAMES = {   'id': uuid.uuid4().hex,
-        'title':'2k21',
-        'genre':'sports',
-        'played': True,
-    }
+GAMES = {'id': uuid.uuid4().hex,
+         'title': '2k21',
+         'genre': 'sports',
+         'played': True,
+         }
+
+
 # The GET and POST route handler
 @app.route('/games', methods=['GET', 'POST'])
 def all_games():
-    response_object = {'status':'success'}
+    response_object = {'status': 'success'}
     if request.method == "POST":
         post_data = request.get_json()
         GAMES.append({
-            'id' : uuid.uuid4().hex,
+            'id': uuid.uuid4().hex,
             'title': post_data.get('title'),
             'genre': post_data.get('genre'),
             'played': post_data.get('played')})
-        response_object['message'] =  'Game Added!'
+        response_object['message'] = 'Game Added!'
     else:
         response_object['games'] = GAMES
     return jsonify(response_object)
 
 
-#The PUT and DELETE route handler
-@app.route('/games/<game_id>', methods =['PUT', 'DELETE'])
+# The PUT and DELETE route handler
+@app.route('/games/<game_id>', methods=['PUT', 'DELETE'])
 def single_game(game_id):
-    response_object = {'status':'success'}
+    response_object = {'status': 'success'}
     if request.method == "PUT":
         post_data = request.get_json()
         remove_game(game_id)
         GAMES.append({
-            'id' : uuid.uuid4().hex,
+            'id': uuid.uuid4().hex,
             'title': post_data.get('title'),
             'genre': post_data.get('genre'),
             'played': post_data.get('played')
         })
-        response_object['message'] =  'Game Updated!'
+        response_object['message'] = 'Game Updated!'
     if request.method == "DELETE":
         remove_game(game_id)
         response_object['message'] = 'Game removed!'
     return jsonify(response_object)
 
 
-@app.route('/upload', methods =['POST'])
+@app.route('/upload', methods=['POST'])
 def uploadFile():
     f = request.files["file"]
     f.save('assets/uploaded.pdf')
@@ -86,9 +90,9 @@ def uploadFile():
 
 @app.route('/solitan', methods=['GET'])
 def getSolitan():
-
     string = json.dumps({"data": cvTransformer.solitan.toDict()})
     return string
+
 
 @app.route('/render', methods=['POST'])
 def renderFile():
@@ -101,8 +105,8 @@ def renderFile():
     doc.save(f)
     length = f.tell()
     f.seek(0)
-    return send_file(f, as_attachment=True, attachment_filename='report.doc')
-
+    return send_from_directory(directory='assets/templates', path='filled_template.docx', as_attachment=True,
+                               attachment_filename='CV_Transformed.docx')
 
 
 # Removing the game to update / delete
@@ -113,6 +117,12 @@ def remove_game(game_id):
             return True
     return False
 
+
+@app.route('/getfile', methods=['GET'])
+def index():
+    return send_from_directory(directory='assets/templates' ,path='filled_template.docx', as_attachment=True,
+                               attachment_filename='report.docx')
+
+
 if __name__ == "__main__":
     app.run(debug=True)
-
