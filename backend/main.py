@@ -99,23 +99,9 @@ def renderFile():
     json = request.json
     Output.addExTable('assets/templates/cv_template.docx', 'assets/templates/semi_filled_template.docx', json)
     fillTemplate.argenta('assets/templates/semi_filled_template.docx', 'assets/templates/filled_template.docx', json)
+
     return send_from_directory(directory='assets/templates', path='filled_template.docx', as_attachment=True,
                                attachment_filename='CV_Transformed.docx')
-
-
-# Removing the game to update / delete
-def remove_game(game_id):
-    for game in GAMES:
-        if game['id'] == game_id:
-            GAMES.remove(game)
-            return True
-    return False
-
-
-@app.route('/getfile', methods=['GET'])
-def index():
-    return send_from_directory(directory='assets/templates' ,path='filled_template.docx', as_attachment=True,
-                               attachment_filename='report.docx')
 
 
 if __name__ == "__main__":
