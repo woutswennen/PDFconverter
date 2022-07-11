@@ -8,7 +8,7 @@ import NavigationBar from "../components/navBar.vue"
 
 
 Vue.use(VueRouter);
-
+Vue.use(Vuex)
 const routes = [
  {
    path : '/upload',

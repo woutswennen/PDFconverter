@@ -7,19 +7,17 @@
     lazy-validation
   >
   <b-form-row>
-    <b-column>
+
         <v-text-field
           v-model="solitan.name"
           label="Name"
           @blur="saveInput"
         ></v-text-field>
-    </b-column>
-    <b-column>
+
         <v-text-field
           v-model="solitan.lastname"
           label="Last Name"
         ></v-text-field>
-    </b-column>
   </b-form-row>
   <b-form-row>
     <v-text-field
@@ -65,9 +63,9 @@ export default {
   computed: mapState(['solitan']),
 
   mounted() {
-
     this.solitan = this.$store.getters.getSolitan;
   },
+
 
   data: () => ({
       solitan: {},
@@ -86,9 +84,9 @@ export default {
 
     methods: {
       saveInput () {
-        console.log(this.solitan.name)
         this.$store.commit('editSolitan', this.solitan);
       },
+
       renderFile() {
         axios({
             method: "POST",
