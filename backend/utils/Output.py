@@ -18,16 +18,16 @@ def addExTable(input_path, output_path, solitan):
     doc = Document(input_path)
 
     index = 0
-    for project in solitan.projects:
+    for project in solitan['projects']:
         arg_dict = {}
         arg_dict['Company'] = 'Solita'
-        arg_dict['Client'] = project.client
-        arg_dict['Period'] = project.start_date + ' - ' + project.end_date
-        arg_dict['Role'] = project.role
-        arg_dict['Tasks'] = project.tasks
-        arg_dict['Tools'] = project.tools
-        arg_dict['Environment'] = project.environment
-        arg_dict['Methodology'] = project.methodologies
+        arg_dict['Client'] = project['client']
+        arg_dict['Period'] = project['start_date'] + ' - ' + project['end_date']
+        arg_dict['Role'] = project['role']
+        arg_dict['Tasks'] = project['tasks']
+        arg_dict['Tools'] = project['tools']
+        arg_dict['Environment'] = project['environment']
+        arg_dict['Methodology'] = project['methodologies']
 
         experiences_dict[str(index)] = arg_dict
 

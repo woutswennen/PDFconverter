@@ -90,9 +90,21 @@ export default {
         this.$store.commit('editSolitan', this.solitan);
       },
       renderFile() {
-        axios.post("http://localhost:5000/render", this.solitan)
-        .then(response =>{
-            console.log(response)
+        axios({
+            method: "POST",
+            url: "http://localhost:5000/render",
+            data: this.solitan,
+            responseType: 'stream'
+        })
+        .then(async response => {
+                     var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+                     var fileLink = document.createElement('a');
+
+                     fileLink.href = fileURL;
+                     fileLink.setAttribute('download', 'file.pdf');
+                     document.body.appendChild(fileLink);
+
+                     fileLink.click();
         })
         .catch(error => {
           console.error("There was an error!", error);

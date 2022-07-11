@@ -2,6 +2,7 @@
 #  VueJs - Flask Full-Stack Web Application
 #  bekbrace.com - info@bekbrace.com
 #  Source Code : Michael Hermann [ mjheaO ]
+import io
 import json
 
 from flask import Flask, jsonify, request
@@ -10,6 +11,7 @@ import uuid
 import utils.CVTransformer as CVTransformer
 import utils.fillTemplate as fillTemplate
 import utils.Output as Output
+from flask import send_file
 from docx import Document
 
 app = Flask(__name__)
@@ -94,7 +96,12 @@ def renderFile():
     Output.addExTable('assets/templates/cv_template.docx', 'assets/templates/semi_filled_template.docx', json)
     fillTemplate.argenta('assets/templates/semi_filled_template.docx', 'assets/templates/filled_template.docx', json)
 
-    return {'succes': 'xd'}
+    doc = Document('assets/templates/filled_template.docx')
+    f = io.StringIO()
+    doc.save(f)
+    length = f.tell()
+    f.seek(0)
+    return send_file(f, as_attachment=True, attachment_filename='report.doc')
 
 
 

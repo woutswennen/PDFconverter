@@ -23,6 +23,11 @@ class Solitan:
         self.tech_skills = []
 
     def toDict(self):
+
+        #Todo if i do tech skills the same way i dit the other object arrays it gives an error
+        tech_skills_string = ""
+        for t in self.tech_skills:
+            tech_skills_string += str(t)
         return{
             'name': self.name,
             'lastname': self.lastname,
@@ -36,15 +41,14 @@ class Solitan:
             'strengths': self.strengths,
             'references': self.references,
             'availability': self.availability,
-            # 'education': self.education,
             'other_skills': self.other_skills,
             'man_skills': self.man_skills,
 
-
+            'education': [e.__dict__ for e in self.education],
             'certifications': [c.__dict__ for c in self.certifications],
             'work_experience': [w.__dict__ for w in self.workExperience],
-            # 'projects': [p.__dict__ for p in self.projects],
-            # 'tech_skills': [t.__dict__ for t in self.tech_skills],
+            'projects': [p.__dict__ for p in self.projects],
+            'tech_skills': tech_skills_string,
             #
             # 'languages': {'Dutch': self.languages['Dutch'], 'English': self.languages['English'], 'French': self.languages['French']}
         }
