@@ -205,4 +205,4 @@ class Language:
         return f"""\n{self.language}\n
         Spoken level: {self.spoken_level}\n
         Written level: {self.written_level}\n
-        Reading level: {self.reading_comprehension}.\n"""
+        Reading level: {self.comprehension_level}.\n"""
