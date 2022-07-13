@@ -22,15 +22,20 @@ export default new Vuex.Store({
         state.solitan = solitan
     },
     setWorkExperience(state,work_experience){
-        console.log(work_experience)
         state.solitan.work_experience = work_experience
     },
     setCertifications(state, certificates){
-        state.solitan.certifications = certificates
+        state.solitan.educations = certificates
     },
     setTechSkills(state, tech_skills){
         state.solitan.tech_skills = tech_skills
     },
+    setProjects(state, projects){
+        state.solitan.projects = projects
+    },
+    setEducations(state, education){
+        state.solitan.education = education
+    }
   },
   actions: {
     fetchSolitan(context){

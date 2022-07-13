@@ -1,7 +1,7 @@
 <template>
     <v-data-table
       :headers="headers"
-      :items="certifications"
+      :items="educations"
       sort-by="start_date"
       item-key="cert_title"
       class="elevation-1 my-4"
@@ -87,17 +87,16 @@
                         label="End date"
                       ></v-text-field>
                     </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
+
+
+                  </v-row>
+                  <v-row>
+                    <v-col>
                       <v-text-field
                         v-model="editedItem.reference"
                         label="Reference"
                       ></v-text-field>
                     </v-col>
-
                   </v-row>
                 </v-container>
               </v-card-text>
@@ -183,7 +182,7 @@
           { text: 'Actions', value: 'actions', sortable: false },
 
         ],
-        certifications: [],
+        educations: [],
         editedIndex: -1,
         editedItem: {
           cert_title: '',
@@ -222,26 +221,26 @@
 
       methods: {
         initialize () {
-          this.certifications = this.$store.getters.getSolitan.certifications
+          this.educations = this.$store.getters.getSolitan.educations
         },
 
 
         editItem (item) {
-          this.editedIndex = this.certifications.indexOf(item)
+          this.editedIndex = this.educations.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialog = true
         },
 
         deleteItem (item) {
-          this.editedIndex = this.certifications.indexOf(item)
+          this.editedIndex = this.educations.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialogDelete = true
         },
 
         deleteItemConfirm () {
-          this.certifications.splice(this.editedIndex, 1)
+          this.educations.splice(this.editedIndex, 1)
           this.closeDelete()
-          this.$store.commit('setCertifications', this.certifications)
+          this.$store.commit('setCertifications', this.educations)
         },
 
         close () {
@@ -262,13 +261,13 @@
 
         save () {
           if (this.editedIndex > -1) {
-            Object.assign(this.certifications[this.editedIndex], this.editedItem)
+            Object.assign(this.educations[this.editedIndex], this.editedItem)
           } else {
-            this.certifications.push(this.editedItem)
-            console.log(this.certifications)
+            this.educations.push(this.editedItem)
+            console.log(this.educations)
           }
           this.close()
-          this.$store.commit('setCertifications', this.certifications)
+          this.$store.commit('setCertifications', this.educations)
         },
       },
   }

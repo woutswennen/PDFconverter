@@ -1,20 +1,21 @@
 from docxtpl import DocxTemplate
 
-from utils.StringTransform import objectArrayToSTring
+from utils.StringTransform import objectArrayToSTring, educationObjectToString
 
 
 def argenta(template_path, output_path, solitan):
     doc = DocxTemplate(template_path)
     #the toDict transformation will transform the dict to match the output format we want in the filled template
-    doc.render(solitan)
+    formattedSolitan = toDict(solitan)
+    doc.render(formattedSolitan)
     doc.save(output_path)
 
 
 def toDict(solitan):
     dict = solitan.copy()
     dict['education'] = objectArrayToSTring(dict['education'])
-    dict['certifications'] = objectArrayToSTring(dict['certifications'])
-    dict['tech_skills'] = objectArrayToSTring(dict['tech_skills'])
+    dict['educations'] = objectArrayToSTring(dict['educations'])
+    dict['tech_skills'] = educationObjectToString(dict['tech_skills'])
     #TODO addLanguagesToDict(dict)
     return dict
 

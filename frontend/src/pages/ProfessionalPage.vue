@@ -2,13 +2,9 @@
 <v-container>
 
 
-<experience-table/>
+<project-table/>
 <certificate-table/>
-
-<v-btn @click="renderFile"
-    color='primary'
-    elevation='2'>
-    Download</v-btn>
+<education-table/>
 
 </v-container>
 </template>
@@ -19,13 +15,15 @@
 
 <script>
 import { mapState } from 'vuex'
-import ExperienceTable from '../components/ExperienceTable.vue'
+import ProjectTable from '../components/ProjectTable.vue'
 import CertificateTable from '../components/CertificateTable.vue'
+import EducationTable from '../components/EducationTable.vue'
 import axios from 'axios'
 export default {
   components: {
-    ExperienceTable,
+    ProjectTable,
     CertificateTable,
+    EducationTable,
   },
   computed: mapState(['solitan']),
 

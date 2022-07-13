@@ -16,7 +16,17 @@ def addItemsToString(string, items):
 
 def objectArrayToSTring(array):
     result = ""
-    for object in array:
-        result += str(object)
+    for json in array:
+        for key in json:
+            result += json[key]
+            result += ' '
         result += '\n'
+
+    return result
+
+def educationObjectToString(array):
+    result = ""
+    for educationJson in array:
+        # result += educationJson['title'] + ' ' + educationJson['institution'] + ': ' + educationJson['education_description'] + ' in ' + educationJson['end_date'] + '\n'
+        print(educationJson)
     return result

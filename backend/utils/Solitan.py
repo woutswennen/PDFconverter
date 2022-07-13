@@ -13,7 +13,7 @@ class Solitan:
         self.references = ""
         self.availability = ""
 
-        self.certifications = []
+        self.educations = []
         self.workExperience = []
         self.education = []
         self.projects = []
@@ -42,7 +42,7 @@ class Solitan:
             'man_skills': self.man_skills,
 
             'education': [e.__dict__ for e in self.education],
-            'certifications': [c.__dict__ for c in self.certifications],
+            'educations': [c.__dict__ for c in self.educations],
             'work_experience': [w.__dict__ for w in self.workExperience],
             'projects': [p.__dict__ for p in self.projects],
             'tech_skills': [t.__dict__ for t in self.tech_skills],
@@ -61,7 +61,7 @@ class Solitan:
         Work workExperience = {self.workExperience}\n
         Education =  {self.education}\n
         Projects = {self.projects}\n
-        Certifications = {self.certifications}\n 
+        Certifications = {self.educations}\n 
         Skills = {self.tech_skills}\n 
         Languages = {self.languages}\n """
 
@@ -79,7 +79,7 @@ class Solitan:
         self.references = ""
         self.availability = ""
 
-        self.certifications = []
+        self.educations = []
         self.workExperience = []
         self.education = []
         self.projects = []
@@ -94,14 +94,14 @@ class WorkExperience:
     def __init__(self):
         self.start_date = ""
         self.end_date = ""
-        self.job_title = ""
+        self.role = ""
         self.company = ""
         self.client = ""
         self.job_description = ""
 
     def __repr__(self):
         return f"""\n
-        Job Title = {self.job_title}
+        Job Title = {self.role}
         Company = {self.company}
         Start date = {self.start_date}
         End date = {self.end_date}

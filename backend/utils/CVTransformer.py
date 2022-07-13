@@ -117,7 +117,7 @@ class CVTransformer:
                         span_jobdescription = doc[end:date_matches[i + 1][1]].text.splitlines()
                     else:
                         span_jobdescription = doc[end::].text.splitlines()
-                    workExperience.job_title, workExperience.company = span_jobdescription.pop(0).strip("— .").split(
+                    workExperience.role, workExperience.company = span_jobdescription.pop(0).strip("— .").split(
                         ',')
 
                     workExperience.job_description = " ".join(span_jobdescription)
@@ -219,7 +219,7 @@ class CVTransformer:
                     span_cert_title, certification.reference = span_description.split('\n', 1)
 
                     certification.cert_title, certification.technology = span_cert_title.split(',')
-                    self.solitan.certifications.append(certification)
+                    self.solitan.educations.append(certification)
         except KeyError:
             print('No Certifications found!')
 

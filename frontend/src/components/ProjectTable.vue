@@ -12,7 +12,7 @@
 
         <template v-slot:expanded-item="{ headers, item }">
           <td :colspan="headers.length">
-            {{ item.job_description }}
+            {{ item.tasks }}
           </td>
         </template>
       <template v-slot:top>
@@ -20,7 +20,7 @@
           flat
         >
 
-          <v-toolbar-title>Experiences</v-toolbar-title>
+          <v-toolbar-title>Projects</v-toolbar-title>
           <v-divider
             class="mx-4"
             inset
@@ -57,7 +57,7 @@
                     >
                       <v-text-field
                         v-model="editedItem.role"
-                        label="Job Title"
+                        label="Role"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -106,8 +106,27 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.job_description"
-                        label="Description"
+                        v-model="editedItem.methodologies"
+                        label="Methodogy"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="6"
+                      md="4"
+                    >
+                      <v-text-field
+                        v-model="editedItem.tools"
+                        label="Tools"
+                      ></v-text-field>
+                    </v-col>
+
+                  </v-row>
+                  <v-row>
+                    <v-col>
+                      <v-text-field
+                        v-model="editedItem.tasks"
+                        label="Tasks"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -191,6 +210,8 @@
           { text: 'Start date', value: 'start_date' },
           { text: 'End date', value: 'end_date' },
           { text: 'Client', value: 'client' },
+          { text: 'Methodology', value: 'methodologies' },
+          { text: 'Tools', value: 'tools' },
           { text: '', value: 'data-table-expand', sortable: false },
           { text: 'Actions', value: 'actions', sortable: false },
 
@@ -203,6 +224,9 @@
           start_date: '',
           end_date: '',
           client: '',
+          tasks: '',
+          methodologies: '',
+          tools: '',
         },
         defaultItem: {
           role: '',
@@ -210,6 +234,9 @@
           start_date: '',
           end_date: '',
           client: '',
+          tasks: '',
+          methodologies: '',
+          tools: '',
         },
       }),
 
@@ -234,7 +261,7 @@
 
       methods: {
         initialize () {
-          this.experiences = this.$store.getters.getSolitan.work_experience
+          this.experiences = this.$store.getters.getSolitan.projects
         },
 
 

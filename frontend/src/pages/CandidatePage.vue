@@ -67,9 +67,6 @@
 
 </v-form>
 
-<v-btn @click="renderFile"
-    color='primary'
-    elevation='2'>Download</v-btn>
 
 </v-container>
 </template>

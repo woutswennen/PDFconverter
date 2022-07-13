@@ -1,18 +1,18 @@
 <template>
     <v-data-table
       :headers="headers"
-      :items="experiences"
-      sort-by="start_date"
+      :items="education"
+      sort-by="end_date"
       :single-expand="singleExpand"
       :expanded.sync="expanded"
-      item-key="role"
+      item-key="institution"
       show-expand
       class="elevation-1 my-4"
     >
 
         <template v-slot:expanded-item="{ headers, item }">
           <td :colspan="headers.length">
-            {{ item.job_description }}
+            {{ item.education_description }}
           </td>
         </template>
       <template v-slot:top>
@@ -20,7 +20,7 @@
           flat
         >
 
-          <v-toolbar-title>Experiences</v-toolbar-title>
+          <v-toolbar-title>Education</v-toolbar-title>
           <v-divider
             class="mx-4"
             inset
@@ -56,8 +56,8 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.role"
-                        label="Job Title"
+                        v-model="editedItem.title"
+                        label="Education title"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -66,8 +66,8 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.company"
-                        label="Company"
+                        v-model="editedItem.institution"
+                        label="Institution"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -76,8 +76,8 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.start_date"
-                        label="Start Date"
+                        v-model="editedItem.education_description"
+                        label="Education Description"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -90,27 +90,10 @@
                         label="End date"
                       ></v-text-field>
                     </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.client"
-                        label="Client"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.job_description"
-                        label="Description"
-                      ></v-text-field>
-                    </v-col>
+
+
                   </v-row>
+
                 </v-container>
               </v-card-text>
 
@@ -182,34 +165,30 @@
         singleExpand: true,
         headers: [
           {
-            text: 'Role',
+            text: 'Education title',
             align: 'start',
             sortable: true,
-            value: 'role',
+            value: 'title',
           },
-          { text: 'Company', value: 'company' },
-          { text: 'Start date', value: 'start_date' },
+          { text: 'Institution', value: 'institution' },
           { text: 'End date', value: 'end_date' },
-          { text: 'Client', value: 'client' },
           { text: '', value: 'data-table-expand', sortable: false },
           { text: 'Actions', value: 'actions', sortable: false },
 
         ],
-        experiences: [],
+        education: [],
         editedIndex: -1,
         editedItem: {
-          role: '',
-          company: '',
-          start_date: '',
+          title: '',
+          institution: '',
+          education_description: '',
           end_date: '',
-          client: '',
         },
         defaultItem: {
-          role: '',
-          company: '',
-          start_date: '',
+          title: '',
+          institution: '',
+          education_description: '',
           end_date: '',
-          client: '',
         },
       }),
 
@@ -234,26 +213,26 @@
 
       methods: {
         initialize () {
-          this.experiences = this.$store.getters.getSolitan.work_experience
+          this.education = this.$store.getters.getSolitan.education
         },
 
 
         editItem (item) {
-          this.editedIndex = this.experiences.indexOf(item)
+          this.editedIndex = this.education.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialog = true
         },
 
         deleteItem (item) {
-          this.editedIndex = this.experiences.indexOf(item)
+          this.editedIndex = this.education.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialogDelete = true
         },
 
         deleteItemConfirm () {
-          this.experiences.splice(this.editedIndex, 1)
+          this.education.splice(this.editedIndex, 1)
           this.closeDelete()
-          this.$store.commit('setProjects', this.experiences)
+          this.$store.commit('setEducation', this.education)
         },
 
         close () {
@@ -274,12 +253,13 @@
 
         save () {
           if (this.editedIndex > -1) {
-            Object.assign(this.experiences[this.editedIndex], this.editedItem)
+            Object.assign(this.education[this.editedIndex], this.editedItem)
           } else {
-            this.experiences.push(this.editedItem)
+            this.education.push(this.editedItem)
+            console.log(this.education)
           }
           this.close()
-          this.$store.commit('setProjects', this.experiences)
+          this.$store.commit('setEducation', this.education)
         },
       },
   }
