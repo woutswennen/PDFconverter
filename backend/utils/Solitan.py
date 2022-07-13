@@ -25,9 +25,8 @@ class Solitan:
     def toDict(self):
 
         #Todo if i do tech skills the same way i dit the other object arrays it gives an error
-        tech_skills_string = ""
-        for t in self.tech_skills:
-            tech_skills_string += str(t)
+        print(self.languages),
+        print(type(self.languages))
         return{
             'name': self.name,
             'lastname': self.lastname,
@@ -48,7 +47,9 @@ class Solitan:
             'certifications': [c.__dict__ for c in self.certifications],
             'work_experience': [w.__dict__ for w in self.workExperience],
             'projects': [p.__dict__ for p in self.projects],
-            'tech_skills': tech_skills_string,
+            'tech_skills': [t.__dict__ for t in self.tech_skills],
+
+            'languages': self.languages
             #
             # 'languages': {'Dutch': self.languages['Dutch'], 'English': self.languages['English'], 'French': self.languages['French']}
         }
@@ -188,21 +189,20 @@ class Skill:
     def __init__(self):
         self.skill = ""
         self.level = ""
-        self.years_exp = ""
+        self.year_exp = ""
 
     def __repr__(self):
-        return f"""\n{self.skill}, {self.level}, {self.year_exp}.\n"""
+        return f"""{self.skill}, {self.level}, {self.year_exp}"""
 
 
 class Language:
-    def __init__(self, language, level):
-        self.language = language
+    def __init__(self, level):
         self.spoken_level = level
         self.written_level = level
         self.comprehension_level = level
 
     def __str__(self):
-        return f"""\n{self.language}\n
+        return f"""\n
         Spoken level: {self.spoken_level}\n
         Written level: {self.written_level}\n
-        Reading level: {self.reading_comprehension}.\n"""
+        Reading level: {self.comprehension_level}.\n"""

@@ -228,9 +228,9 @@ class CVTransformer:
                 span_level = doc[start - 1]
 
             skill = Skill()
-            skill.skill = span_tech
-            skill.level = span_level
-            skill.year_exp = span_date
+            skill.skill = str(span_tech)
+            skill.level = str(span_level)
+            skill.year_exp = str(span_date)
             self.solitan.tech_skills.append(skill)
 
         man_skills_array = self.cv_in_sections['Strengths'].splitlines()
@@ -243,8 +243,8 @@ class CVTransformer:
         doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
         for line in doc.text.splitlines():
             span_language, span_level = line.split(' ', 1)
-            language = Language(span_language, span_level)
-            self.solitan.languages[span_language] = language
+            language = Language(span_level)
+            self.solitan.languages[span_language] = language.__dict__
 
 
 

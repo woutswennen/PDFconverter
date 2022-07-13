@@ -1,49 +1,47 @@
 <template>
-<div>
+<v-container>
+
+  <h4>Skills seperated with a comma</h4>
   <v-form
 
     ref="form"
     v-model="valid"
     lazy-validation
+    class="my-5"
   >
   <b-form-row>
 
         <v-text-field
-          v-model="solitan.name"
-          label="Name"
+          v-model="solitan.man_skills"
+          label="Management skills"
           @blur="saveInput"
         ></v-text-field>
 
-        <v-text-field
-          v-model="solitan.lastname"
-          label="Last Name"
-        ></v-text-field>
-  </b-form-row>
-  <b-form-row>
-    <v-text-field
-      v-model="solitan.birthday"
-      label="Date of birth"
-    ></v-text-field>
 
-     <v-text-field
-      v-model="solitan.nationality"
-      label="Nationality"
-    ></v-text-field>
   </b-form-row>
+
+
+
+
+
   <b-form-row>
     <v-text-field
-      v-model="solitan.gender"
-      label="Nationality"
+      v-model="solitan.other_skills"
+      label="Other skills"
+      @blur="saveInput"
     ></v-text-field>
   </b-form-row>
+
 </v-form>
 
-<experience-table/>
-<certificate-table/>
+<TechSkillsTable/>
 
-<button @click="renderFile">Render</button>
+<v-btn @click="renderFile"
+    color='primary'
+    elevation='2'>
+    Download</v-btn>
 
-</div>
+</v-container>
 </template>
 
 
@@ -52,15 +50,14 @@
 
 <script>
 import { mapState } from 'vuex'
-import ExperienceTable from '../components/ExperienceTable.vue'
-import CertificateTable from '../components/CertificateTable.vue'
 import axios from 'axios'
+import TechSkillsTable from '../components/TechSkillsTable.vue'
 export default {
-  components: {
-    ExperienceTable,
-    CertificateTable,
-  },
   computed: mapState(['solitan']),
+
+  components: {
+    TechSkillsTable
+  },
 
   mounted() {
     this.solitan = this.$store.getters.getSolitan;
@@ -84,9 +81,6 @@ export default {
     }),
 
     methods: {
-      saveInput () {
-        this.$store.commit('editSolitan', this.solitan);
-      },
 
       renderFile() {
         axios({
@@ -114,6 +108,8 @@ export default {
 
 };
 </script>
+
+
 
 
 
