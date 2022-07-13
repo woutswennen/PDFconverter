@@ -123,7 +123,7 @@ export default {
                      var fileLink = document.createElement('a');
 
                      fileLink.href = fileURL;
-                     fileLink.setAttribute('download', 'file.docx');
+                     fileLink.setAttribute('download', this.solitan.name + '_' + this.solitan.lastname + '_CV.docx');
                      document.body.appendChild(fileLink);
 
                      fileLink.click();
