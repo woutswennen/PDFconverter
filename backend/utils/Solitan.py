@@ -15,7 +15,7 @@ class Solitan:
 
         self.certifications = []
         self.workExperience = []
-        self.education = ""
+        self.education = []
         self.projects = []
         self.languages = {}
         self.other_skills = ""
