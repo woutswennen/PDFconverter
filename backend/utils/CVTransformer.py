@@ -6,9 +6,7 @@ from tika import parser
 import pandas as pd
 import csv
 
-
 from utils.StringTransform import addItemsToString, addItemToString
-
 
 
 class CVTransformer:
@@ -74,8 +72,10 @@ class CVTransformer:
                      'Web presence', 'Languages', 'Hobbies & passions']]
 
         doc = self.nlp(self.cv)
+        print(doc)
         phrase_matcher.add("SECTION", None, *sections)
         matches = phrase_matcher(doc)
+        start_next = 0
         if len(matches) > 0:
             for i in range(0, len(matches) - 1):
                 match_id, start, end = matches[i]
@@ -101,7 +101,7 @@ class CVTransformer:
                     break
 
     def get_work_experience(self):
-        if 'Work history' in self.cv_in_sections:
+        try:
             doc = self.nlp(self.cv_in_sections['Work history'])
             matches = self.matcher_dates(doc)
             if len(matches) > 0:
@@ -123,11 +123,11 @@ class CVTransformer:
 
                     workExperience.job_description = " ".join(span_jobdescription)
                     self.solitan.workExperience.append(workExperience)
-        else:
-            self.solitan.workExperience.append('No work experience found.')
+        except KeyError:
+            print('No Work Experience found!')
 
     def get_education(self):
-        if 'Education' in self.cv_in_sections:
+        try:
             self.solitan.education = list()
             doc = self.nlp(self.cv_in_sections['Education'])
             educations = []
@@ -152,12 +152,13 @@ class CVTransformer:
                         span_title = span_education_description
                     education.title, education.institution = span_title.strip("— .").split(',')
                     educations.append(education)
+
             self.solitan.education = educations
-        else:
-            self.solitan.education.append('No education found.')
+        except KeyError:
+            print('No Education found!')
 
     def get_projects(self):
-        if 'Projects' in self.cv_in_sections:
+        try:
             doc = self.nlp(self.cv_in_sections['Projects'])
             matches = self.matcher_dates(doc)
             self.last_found_tools = []
@@ -194,11 +195,11 @@ class CVTransformer:
                     project.tools = addItemsToString(project.tools, project_tools)
                     # add new project object to projects list
                     self.solitan.projects.append(project)
-        else:
-            self.solitan.projects.append('No projects found.')
+        except KeyError:
+            print('No Projects found!')
 
     def get_certificates(self):
-        if 'Certificates' in self.cv_in_sections:
+        try:
             doc = self.nlp(self.cv_in_sections['Certificates'])
             matches = self.matcher_dates(doc)
             if len(matches) > 0:
@@ -220,11 +221,11 @@ class CVTransformer:
 
                     certification.cert_title, certification.technology = span_cert_title.split(',')
                     self.solitan.certifications.append(certification)
-        else:
-            self.solitan.certifications.append('No certifications found')
+        except KeyError:
+            print('No Certifications found!')
 
     def get_skills(self):
-        if 'Skills' in self.cv_in_sections:
+        try:
             doc = self.nlp(self.cv_in_sections['Skills'])
 
             matches = self.matcher_duration(self.nlp(" ".join([token.lemma_ for token in doc])))
@@ -245,21 +246,25 @@ class CVTransformer:
                 skill.level = span_level
                 skill.year_exp = span_date
                 self.solitan.tech_skills.append(skill)
-        else:
-            self.solitan.man_skills = 'No skills found.'
-
-        man_skills_array = self.cv_in_sections['Strengths'].splitlines()
-        man_skills_array = [skill for skill in man_skills_array if skill != '']
-        self.solitan.man_skills = addItemsToString(self.solitan.man_skills, man_skills_array)
+        except KeyError:
+            print('No Skills found!')
+        try:
+            man_skills_array = self.cv_in_sections['Strengths'].splitlines()
+            man_skills_array = [skill for skill in man_skills_array if skill != '']
+            self.solitan.man_skills = addItemsToString(self.solitan.man_skills, man_skills_array)
+        except KeyError:
+            print('No Strengths found!')
 
 
     def get_languages(self):
-        if 'Languages' in self.cv_in_sections:
+        try:
             doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
             for line in doc.text.splitlines():
                 span_language, span_level = line.split(' ', 1)
                 language = Language(span_language, span_level)
                 self.solitan.languages[span_language] = language
+        except KeyError:
+            print('No Languages found!')
 
     def getProjectTools(self, description):
         project_description = self.nlp(description)
@@ -319,5 +324,3 @@ def filter_matches_by_longest_string(matches):
             filtered_matches.append(matches[i])
     filtered_matches.append(matches[-1])
     return filtered_matches
-
-
