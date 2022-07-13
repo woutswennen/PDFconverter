@@ -1,7 +1,7 @@
 <template>
     <v-data-table
       :headers="headers"
-      :items="educations"
+      :items="certifications"
       sort-by="start_date"
       item-key="cert_title"
       class="elevation-1 my-4"
@@ -182,7 +182,7 @@
           { text: 'Actions', value: 'actions', sortable: false },
 
         ],
-        educations: [],
+        certifications: [],
         editedIndex: -1,
         editedItem: {
           cert_title: '',
@@ -221,26 +221,26 @@
 
       methods: {
         initialize () {
-          this.educations = this.$store.getters.getSolitan.educations
+          this.certifications = this.$store.getters.getSolitan.certifications
         },
 
 
         editItem (item) {
-          this.editedIndex = this.educations.indexOf(item)
+          this.editedIndex = this.certifications.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialog = true
         },
 
         deleteItem (item) {
-          this.editedIndex = this.educations.indexOf(item)
+          this.editedIndex = this.certifications.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialogDelete = true
         },
 
         deleteItemConfirm () {
-          this.educations.splice(this.editedIndex, 1)
+          this.certifications.splice(this.editedIndex, 1)
           this.closeDelete()
-          this.$store.commit('setCertifications', this.educations)
+          this.$store.commit('setCertifications', this.certifications)
         },
 
         close () {
@@ -261,13 +261,13 @@
 
         save () {
           if (this.editedIndex > -1) {
-            Object.assign(this.educations[this.editedIndex], this.editedItem)
+            Object.assign(this.certifications[this.editedIndex], this.editedItem)
           } else {
-            this.educations.push(this.editedItem)
-            console.log(this.educations)
+            this.certifications.push(this.editedItem)
+            console.log(this.certifications)
           }
           this.close()
-          this.$store.commit('setCertifications', this.educations)
+          this.$store.commit('setCertifications', this.certifications)
         },
       },
   }

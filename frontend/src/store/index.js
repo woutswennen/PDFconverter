@@ -25,7 +25,7 @@ export default new Vuex.Store({
         state.solitan.work_experience = work_experience
     },
     setCertifications(state, certificates){
-        state.solitan.educations = certificates
+        state.solitan.certifications = certificates
     },
     setTechSkills(state, tech_skills){
         state.solitan.tech_skills = tech_skills

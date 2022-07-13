@@ -129,7 +129,7 @@ class CVTransformer:
         try:
             self.solitan.education = list()
             doc = self.nlp(self.cv_in_sections['Education'])
-            educations = []
+            certifications = []
             matches = self.matcher_year(doc)
             if len(matches) > 0:
                 date_matches = filter_matches_by_longest_string(matches)
@@ -150,9 +150,9 @@ class CVTransformer:
                     else:
                         span_title = span_education_description
                     education.title, education.institution = span_title.strip("— .").split(',')
-                    educations.append(education)
+                    certifications.append(education)
 
-            self.solitan.education = educations
+            self.solitan.education = certifications
         except KeyError:
             print('No Education found!')
 
@@ -219,7 +219,7 @@ class CVTransformer:
                     span_cert_title, certification.reference = span_description.split('\n', 1)
 
                     certification.cert_title, certification.technology = span_cert_title.split(',')
-                    self.solitan.educations.append(certification)
+                    self.solitan.certifications.append(certification)
         except KeyError:
             print('No Certifications found!')
 

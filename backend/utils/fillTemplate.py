@@ -1,6 +1,6 @@
 from docxtpl import DocxTemplate
 
-from utils.StringTransform import objectArrayToSTring, educationObjectToString
+from utils.StringTransform import objectArrayToSTring, educationObjectToString, certObjectToString
 
 
 def argenta(template_path, output_path, solitan):
@@ -13,9 +13,9 @@ def argenta(template_path, output_path, solitan):
 
 def toDict(solitan):
     dict = solitan.copy()
-    dict['education'] = objectArrayToSTring(dict['education'])
-    dict['educations'] = objectArrayToSTring(dict['educations'])
-    dict['tech_skills'] = educationObjectToString(dict['tech_skills'])
+    dict['certifications'] = certObjectToString(dict['certifications'])
+    # dict['education'] = objectArrayToSTring(dict['education'])
+    dict['education'] = educationObjectToString(dict['education'])
     #TODO addLanguagesToDict(dict)
     return dict
 

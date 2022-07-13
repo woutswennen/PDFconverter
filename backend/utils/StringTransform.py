@@ -27,6 +27,13 @@ def objectArrayToSTring(array):
 def educationObjectToString(array):
     result = ""
     for educationJson in array:
-        # result += educationJson['title'] + ' ' + educationJson['institution'] + ': ' + educationJson['education_description'] + ' in ' + educationJson['end_date'] + '\n'
-        print(educationJson)
+        result += educationJson['end_date'] + ' - ' + educationJson['title'] + ' ' + educationJson['institution'] + ': ' + educationJson['education_description'] + '\n'
+    return result
+
+def certObjectToString(array):
+    result = ""
+    for certJson in array:
+        result += certJson['end_date'] + ' - ' + certJson['cert_title'] + ' ' + certJson['technology'] + '\n'
+        if(certJson['reference'] != ''):
+            result += certJson['reference'] + '\n'
     return result
