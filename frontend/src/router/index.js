@@ -1,10 +1,10 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import UploadPage from '../pages/UploadPage.vue'
-import ExperienceTable from '../components/ExperienceTable.vue'
-import EditPage from "../pages/EditPage.vue"
-import NavigationBar from "../components/navBar.vue"
 
+import CandidatePage from '../pages/CandidatePage.vue'
+import ProfessionalPage from '../pages/ProfessionalPage.vue'
+import SkillPage from '../pages/SkillPage.vue'
 
 Vue.use(VueRouter);
 
@@ -20,19 +20,19 @@ const routes = [
    component : UploadPage,
  },
  {
-   path : '/edit',
-   name : 'EditPage',
-   component : EditPage,
+   path : '/personal',
+   name : 'CandidatePage',
+   component : CandidatePage,
  },
  {
-    path: '/table',
-    name: 'ExperienceTable',
-    component : ExperienceTable,
+    path: '/professional',
+    name: 'ProfessionalPage',
+    component : ProfessionalPage,
  },
  {
-    path: '/navigation',
-    name: 'NavigationBar',
-    component : NavigationBar,
+    path: '/skills',
+    name: 'SkillPage',
+    component : SkillPage,
  }
 ];
 

@@ -23,6 +23,9 @@ export default new Vuex.Store({
     },
     setWorkExperience(state,work_experience){
         state.solitan.work_experience = work_experience
+    },
+    setCertifications(state, solitan){
+        state.solitan = solitan
     }
   },
   actions: {

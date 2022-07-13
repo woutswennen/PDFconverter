@@ -1,10 +1,10 @@
 <template>
     <v-data-table
       :headers="headers"
-      :items="certifications"
+      :items="tech_skills"
       sort-by="start_date"
       item-key="cert_title"
-      class="elevation-1"
+      class="elevation-1 my-4"
     >
 
         <template v-slot:expanded-item="{ headers, item }">
@@ -17,7 +17,7 @@
           flat
         >
 
-          <v-toolbar-title>Certifications</v-toolbar-title>
+          <v-toolbar-title>Tech Skills</v-toolbar-title>
           <v-divider
             class="mx-4"
             inset
@@ -53,8 +53,8 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.cert_title"
-                        label="Certificate title"
+                        v-model="editedItem.skill"
+                        label="Skill"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -63,8 +63,8 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.technology"
-                        label="Technology"
+                        v-model="editedItem.level"
+                        label="Level"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -73,28 +73,8 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.start_date"
-                        label="Start Date"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.end_date"
-                        label="End date"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.reference"
-                        label="Reference"
+                        v-model="editedItem.year_exp"
+                        label="Years experience"
                       ></v-text-field>
                     </v-col>
 
@@ -121,17 +101,7 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -170,34 +140,27 @@
         singleExpand: true,
         headers: [
           {
-            text: 'Certificate title',
+            text: 'Skill',
             align: 'start',
             sortable: true,
-            value: 'cert_title',
+            value: 'skill',
           },
-          { text: 'Technology', value: 'technology' },
-          { text: 'Start date', value: 'start_date' },
-          { text: 'End date', value: 'end_date' },
-          { text: 'Reference', value: 'reference' },
-          { text: '', value: 'data-table-expand', sortable: false },
+          { text: 'Level', value: 'level' },
+          { text: 'Years experience', value: 'year_exp' },
           { text: 'Actions', value: 'actions', sortable: false },
 
         ],
-        certifications: [],
+        tech_skills: [],
         editedIndex: -1,
         editedItem: {
-          cert_title: '',
-          calories: 0,
-          fat: 0,
-          carbs: 0,
-          protein: 0,
+          skill: '',
+          level: '',
+          year_exp: '',
         },
         defaultItem: {
-          cert_title: '',
-          calories: 0,
-          fat: 0,
-          carbs: 0,
-          protein: 0,
+          skill: '',
+          level: '',
+          year_exp: '',
         },
       }),
 
@@ -222,26 +185,27 @@
 
       methods: {
         initialize () {
-          this.certifications = this.$store.getters.getSolitan.certifications
+          this.tech_skills = this.$store.getters.getSolitan.tech_skills
         },
 
 
         editItem (item) {
-          this.editedIndex = this.certifications.indexOf(item)
+          this.editedIndex = this.tech_skills.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialog = true
         },
 
         deleteItem (item) {
-          this.editedIndex = this.certifications.indexOf(item)
+          this.editedIndex = this.tech_skills.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialogDelete = true
+          this.deleteItemConfirm()
         },
 
         deleteItemConfirm () {
-          this.certifications.splice(this.editedIndex, 1)
+          this.tech_skills.splice(this.editedIndex, 1)
           this.closeDelete()
-          this.$store.commit('editWorkExperience', this.certifications)
+          this.$store.commit('editTechSkills', this.tech_skills)
         },
 
         close () {
@@ -262,13 +226,21 @@
 
         save () {
           if (this.editedIndex > -1) {
-            Object.assign(this.certifications[this.editedIndex], this.editedItem)
+            Object.assign(this.tech_skills[this.editedIndex], this.editedItem)
           } else {
-            this.certifications.push(this.editedItem)
+            this.tech_skills.push(this.editedItem)
           }
           this.close()
-          this.$store.commit('editWorkExperience', this.certifications)
+          this.$store.commit('editTechSkills', this.tech_skills)
         },
+
+        clickConfirm() {
+            this.close()
+            console.log("ja")
+            document.getElementById('confirmBtn').click()
+
+        }
+
       },
   }
 </script>

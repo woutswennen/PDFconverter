@@ -75,7 +75,6 @@ class CVTransformer:
         print(doc)
         phrase_matcher.add("SECTION", None, *sections)
         matches = phrase_matcher(doc)
-        start_next = 0
         if len(matches) > 0:
             for i in range(0, len(matches) - 1):
                 match_id, start, end = matches[i]
@@ -242,9 +241,9 @@ class CVTransformer:
                     span_level = doc[start - 1]
 
                 skill = Skill()
-                skill.skill = span_tech
-                skill.level = span_level
-                skill.year_exp = span_date
+                skill.skill = str(span_tech)
+                skill.level = str(span_level)
+                skill.year_exp = str(span_date)
                 self.solitan.tech_skills.append(skill)
         except KeyError:
             print('No Skills found!')
@@ -262,7 +261,7 @@ class CVTransformer:
             for line in doc.text.splitlines():
                 span_language, span_level = line.split(' ', 1)
                 language = Language(span_language, span_level)
-                self.solitan.languages[span_language] = language
+                self.solitan.languages[span_language] = language.__dict__
         except KeyError:
             print('No Languages found!')
 

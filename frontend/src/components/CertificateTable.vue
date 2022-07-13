@@ -1,13 +1,10 @@
 <template>
     <v-data-table
       :headers="headers"
-      :items="experiences"
+      :items="certifications"
       sort-by="start_date"
-      :single-expand="singleExpand"
-      :expanded.sync="expanded"
-      item-key="job_title"
-      show-expand
-      class="elevation-1"
+      item-key="cert_title"
+      class="elevation-1 my-4"
     >
 
         <template v-slot:expanded-item="{ headers, item }">
@@ -20,7 +17,7 @@
           flat
         >
 
-          <v-toolbar-title>Experiences</v-toolbar-title>
+          <v-toolbar-title>Certifications</v-toolbar-title>
           <v-divider
             class="mx-4"
             inset
@@ -56,8 +53,8 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.job_title"
-                        label="Job Title"
+                        v-model="editedItem.cert_title"
+                        label="Certificate title"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -66,8 +63,8 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.company"
-                        label="Company"
+                        v-model="editedItem.technology"
+                        label="Technology"
                       ></v-text-field>
                     </v-col>
                     <v-col
@@ -96,20 +93,11 @@
                       md="4"
                     >
                       <v-text-field
-                        v-model="editedItem.client"
-                        label="Client"
+                        v-model="editedItem.reference"
+                        label="Reference"
                       ></v-text-field>
                     </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.job_description"
-                        label="Description"
-                      ></v-text-field>
-                    </v-col>
+
                   </v-row>
                 </v-container>
               </v-card-text>
@@ -182,30 +170,30 @@
         singleExpand: true,
         headers: [
           {
-            text: 'Job title',
+            text: 'Certificate title',
             align: 'start',
             sortable: true,
-            value: 'job_title',
+            value: 'cert_title',
           },
-          { text: 'Company', value: 'company' },
+          { text: 'Technology', value: 'technology' },
           { text: 'Start date', value: 'start_date' },
           { text: 'End date', value: 'end_date' },
-          { text: 'Client', value: 'client' },
+          { text: 'Reference', value: 'reference' },
           { text: '', value: 'data-table-expand', sortable: false },
           { text: 'Actions', value: 'actions', sortable: false },
 
         ],
-        experiences: [],
+        certifications: [],
         editedIndex: -1,
         editedItem: {
-          job_title: '',
+          cert_title: '',
           calories: 0,
           fat: 0,
           carbs: 0,
           protein: 0,
         },
         defaultItem: {
-          job_title: '',
+          cert_title: '',
           calories: 0,
           fat: 0,
           carbs: 0,
@@ -234,26 +222,26 @@
 
       methods: {
         initialize () {
-          this.experiences = this.$store.getters.getSolitan.work_experience
+          this.certifications = this.$store.getters.getSolitan.certifications
         },
 
 
         editItem (item) {
-          this.editedIndex = this.experiences.indexOf(item)
+          this.editedIndex = this.certifications.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialog = true
         },
 
         deleteItem (item) {
-          this.editedIndex = this.experiences.indexOf(item)
+          this.editedIndex = this.certifications.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialogDelete = true
         },
 
         deleteItemConfirm () {
-          this.experiences.splice(this.editedIndex, 1)
+          this.certifications.splice(this.editedIndex, 1)
           this.closeDelete()
-          this.$store.commit('editWorkExperience', this.experiences)
+          this.$store.commit('setCertifications', this.certifications)
         },
 
         close () {
@@ -274,12 +262,12 @@
 
         save () {
           if (this.editedIndex > -1) {
-            Object.assign(this.experiences[this.editedIndex], this.editedItem)
+            Object.assign(this.certifications[this.editedIndex], this.editedItem)
           } else {
-            this.experiences.push(this.editedItem)
+            this.certifications.push(this.editedItem)
           }
           this.close()
-          this.$store.commit('editWorkExperience', this.experiences)
+          this.$store.commit('setCertifications', this.certifications)
         },
       },
   }
