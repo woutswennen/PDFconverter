@@ -37,3 +37,10 @@ def certObjectToString(array):
         if(certJson['reference'] != ''):
             result += certJson['reference'] + '\n'
     return result
+
+def techSkillObjectToString(array):
+    result = ""
+    for skillJson in array:
+        result += skillJson['skill'] + ', Niveau: ' + skillJson['level'] + ', Experience: ' + skillJson['year_exp'] + '\n'
+
+    return result
