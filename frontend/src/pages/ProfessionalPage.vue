@@ -31,7 +31,6 @@ export default {
 
   mounted() {
     this.solitan = this.$store.getters.getSolitan;
-    console.log(this.$store.getters.getSolitan.name)
   },
 
 

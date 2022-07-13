@@ -81,6 +81,9 @@ export default {
     }),
 
     methods: {
+      saveInput () {
+        this.$store.commit('setSolitan', this.solitan);
+      },
 
       renderFile() {
         axios({

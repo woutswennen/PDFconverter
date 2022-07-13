@@ -48,8 +48,6 @@ class Solitan:
             'tech_skills': [t.__dict__ for t in self.tech_skills],
 
             'languages': self.languages
-            #
-            # 'languages': {'Dutch': self.languages['Dutch'], 'English': self.languages['English'], 'French': self.languages['French']}
         }
 
 

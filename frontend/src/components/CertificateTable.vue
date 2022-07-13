@@ -187,17 +187,17 @@
         editedIndex: -1,
         editedItem: {
           cert_title: '',
-          calories: 0,
-          fat: 0,
-          carbs: 0,
-          protein: 0,
+          technology: '',
+          start_date: '',
+          end_date: '',
+          reference: '',
         },
         defaultItem: {
           cert_title: '',
-          calories: 0,
-          fat: 0,
-          carbs: 0,
-          protein: 0,
+          technology: '',
+          start_date: '',
+          end_date: '',
+          reference: '',
         },
       }),
 
@@ -265,6 +265,7 @@
             Object.assign(this.certifications[this.editedIndex], this.editedItem)
           } else {
             this.certifications.push(this.editedItem)
+            console.log(this.certifications)
           }
           this.close()
           this.$store.commit('setCertifications', this.certifications)

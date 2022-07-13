@@ -231,7 +231,7 @@
             this.tech_skills.push(this.editedItem)
           }
           this.close()
-          this.$store.commit('editTechSkills', this.tech_skills)
+          this.$store.commit('setTechSkills', this.tech_skills)
         },
 
         clickConfirm() {

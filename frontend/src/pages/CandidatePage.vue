@@ -108,7 +108,7 @@ export default {
 
     methods: {
       saveInput () {
-        this.$store.commit('editSolitan', this.solitan);
+        this.$store.commit('setSolitan', this.solitan);
       },
 
       renderFile() {
