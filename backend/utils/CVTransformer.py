@@ -260,7 +260,7 @@ class CVTransformer:
             doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
             for line in doc.text.splitlines():
                 span_language, span_level = line.split(' ', 1)
-                language = Language(span_language, span_level)
+                language = Language(span_level)
                 self.solitan.languages[span_language] = language.__dict__
         except KeyError:
             print('No Languages found!')
