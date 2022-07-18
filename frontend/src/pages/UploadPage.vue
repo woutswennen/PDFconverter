@@ -1,7 +1,7 @@
 <template>
   <b-container class="position-relative p-4">
     <b-row class="mb-2 d-flex justify-content-center">
-      <div>
+      <div class="col-md-11" style="text-align: center">
         <h1 class="text-secondary" style="font-size:50px">Welcome to Solita CV Transformer</h1>
         <p class="text-secondary">This tool uses NLP (Natural Language Processing) to extract the information from the 
           solitan CV, and then write them down in the template of the clien (Bv. BNP consultant template)
