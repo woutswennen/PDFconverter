@@ -35,11 +35,16 @@
 </v-form>
 
 <TechSkillsTable/>
+<b-form-row class="d-flex justify-content-end">
+    <router-link :to="{path: '/'}">
+      <v-btn @click="renderFile"
+      color='primary'
+      elevation='2'>
+      Render and Download</v-btn>
+    </router-link>
+</b-form-row>
 
-<v-btn @click="renderFile"
-    color='primary'
-    elevation='2'>
-    Download</v-btn>
+
 
 </v-container>
 </template>
@@ -101,11 +106,10 @@ export default {
                      var fileLink = document.createElement('a');
 
                      fileLink.href = fileURL;
-                     fileLink.setAttribute('download', this.solitan.name + this.solitan.lastname + '.docx');
+                     fileLink.setAttribute('download', this.solitan.name + '-' + this.solitan.lastname + '.docx');
                      document.body.appendChild(fileLink);
 
                      fileLink.click();
-                     this.loadInfo()
         })
         .catch(error => {
           console.error("There was an error!", error);

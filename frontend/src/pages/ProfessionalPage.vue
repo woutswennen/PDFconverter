@@ -5,7 +5,11 @@
 <project-table/>
 <certificate-table/>
 <education-table/>
-
+  <b-form-row class="d-flex justify-content-end">
+    <router-link :to="{path: '/skills'}">
+      <b-button variant="info" class="text-white">Next >> Skills</b-button>
+    </router-link>
+  </b-form-row>
 </v-container>
 </template>
 

@@ -60,9 +60,10 @@
       label="Availability date"
       @blur="saveInput"
     ></v-text-field>
-  <b-form-row>
-
-
+  <b-form-row class="d-flex justify-content-end">
+    <router-link :to="{path: '/professional'}">
+      <b-button variant="info" class="text-white">Next >> Professional Experience</b-button>
+    </router-link>
   </b-form-row>
 
 </v-form>
