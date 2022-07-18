@@ -81,8 +81,12 @@ export default {
     }),
 
     methods: {
-      saveInput () {
+      saveInput() {
         this.$store.commit('setSolitan', this.solitan);
+      },
+
+      loadInfo() {
+        this.$router.push('/login');
       },
 
       renderFile() {
@@ -101,6 +105,7 @@ export default {
                      document.body.appendChild(fileLink);
 
                      fileLink.click();
+                     this.loadInfo()
         })
         .catch(error => {
           console.error("There was an error!", error);

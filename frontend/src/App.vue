@@ -1,7 +1,6 @@
 <template>
   <v-app>
     <NavBar/>
-
     <v-main class="mx-4">
       <router-view/>
     </v-main>
@@ -10,6 +9,7 @@
 
 <script>
 import NavBar from '@/components/navBar.vue'
+import './plugins/bootstrap-vue'
 
 export default {
   name: 'App',

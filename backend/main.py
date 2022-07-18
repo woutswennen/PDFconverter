@@ -1,7 +1,3 @@
-#  @Bek Brace [ Twitter - Dev.to - GitHub ]
-#  VueJs - Flask Full-Stack Web Application
-#  bekbrace.com - info@bekbrace.com
-#  Source Code : Michael Hermann [ mjheaO ]
 import io
 import json
 
@@ -28,56 +24,7 @@ cvTransformer = CVTransformer.CVTransformer()
 # hello world route
 @app.route('/', methods=['GET'])
 def greetings():
-    return ("Hello, world!")
-
-
-@app.route('/shark', methods=['GET'])
-def shark():
-    return ("Shark🦈!")
-
-
-GAMES = {'id': uuid.uuid4().hex,
-         'title': '2k21',
-         'genre': 'sports',
-         'played': True,
-         }
-
-
-# The GET and POST route handler
-@app.route('/games', methods=['GET', 'POST'])
-def all_games():
-    response_object = {'status': 'success'}
-    if request.method == "POST":
-        post_data = request.get_json()
-        GAMES.append({
-            'id': uuid.uuid4().hex,
-            'title': post_data.get('title'),
-            'genre': post_data.get('genre'),
-            'played': post_data.get('played')})
-        response_object['message'] = 'Game Added!'
-    else:
-        response_object['games'] = GAMES
-    return jsonify(response_object)
-
-
-# The PUT and DELETE route handler
-@app.route('/games/<game_id>', methods=['PUT', 'DELETE'])
-def single_game(game_id):
-    response_object = {'status': 'success'}
-    if request.method == "PUT":
-        post_data = request.get_json()
-        remove_game(game_id)
-        GAMES.append({
-            'id': uuid.uuid4().hex,
-            'title': post_data.get('title'),
-            'genre': post_data.get('genre'),
-            'played': post_data.get('played')
-        })
-        response_object['message'] = 'Game Updated!'
-    if request.method == "DELETE":
-        remove_game(game_id)
-        response_object['message'] = 'Game removed!'
-    return jsonify(response_object)
+    return ("ACTIVE")
 
 
 @app.route('/upload', methods=['POST'])
