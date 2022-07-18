@@ -48,6 +48,7 @@ class CVTransformer:
 
     def prepare_and_extract(self, cv):
         self.solitan = Solitan()
+        self.solitan.clear()
         self.cv = parser.from_file(cv)['content']
         self.cv = re.sub('-\n+|\ue210', '', self.cv)
         self.cv = re.sub("^[a-zA-Z0-9]*$", '', self.cv)
