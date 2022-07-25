@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "containerGroupName": {
+        "type": "string",
+        "defaultValue": "cvtransformer",
+        "metadata": {
+          "description": "Container Group name."
+        }
+      }
+    },
+    "variables": {
+      "container1name": "cv-transformer-flask-api",
+      "container1image": "cvtransformer.azurecr.io/cv-transformer-flask-api:v3",
+      "container2name": "cv-transformer-vue-app",
+      "container2image": "cvtransformer.azurecr.io/cv-transformer-vue-app:v3"
+    },
+    "resources": [
+      {
+        "name": "[parameters('containerGroupName')]",
+        "type": "Microsoft.ContainerInstance/containerGroups",
+        "apiVersion": "2019-12-01",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "containers": [
+            {
+              "name": "[variables('container1name')]",
+              "properties": {
+                "image": "[variables('container1image')]",
+                "resources": {
+                  "requests": {
+                    "cpu": 1,
+                    "memoryInGb": 1.5
+                  }
+                },
+                "ports": [
+                  {
+                    "port": 80
+                  },
+                  {
+                    "port": 8080
+                  }
+                ]
+              }
+            },
+            {
+              "name": "[variables('container2name')]",
+              "properties": {
+                "image": "[variables('container2image')]",
+                "resources": {
+                  "requests": {
+                    "cpu": 1,
+                    "memoryInGb": 1.5
+                  }
+                }
+              }
+            }
+          ],
+          "osType": "Linux",
+          "ipAddress": {
+            "type": "Public",
+            "ports": [
+              {
+                "protocol": "tcp",
+                "port": 80
+              },
+              {
+                  "protocol": "tcp",
+                  "port": 8080
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": {
+      "containerIPv4Address": {
+        "type": "string",
+        "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups/', parameters('containerGroupName'))).ipAddress.ip]"
+      }
+    }
+    
+  }
