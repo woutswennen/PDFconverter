@@ -1,26 +1,27 @@
-FROM node:lts-alpine
+FROM ubuntu:20.04
 
-#Install serve package
-RUN npm i -g serve
+# Setup python and java and base system
+ENV DEBIAN_FRONTEND noninteractive
+ENV LANG=en_US.UTF-8
 
-# Set the working directory
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -q -y openjdk-8-jdk python3-pip libsnappy-dev language-pack-en supervisor
+
+RUN pip3 install --upgrade pip requests
+RUN pip3 install python-docx tika numpy pandas
+RUN pip3 install -U setuptools wheel
+RUN pip3 install -U spacy flask flask_cors
+
 RUN mkdir ./app
-WORKDIR /app
+COPY . ./app
+WORKDIR ./app
 
-# Copy the package.json and package-lock.json
-COPY package*.json ./
+COPY requirements.txt ./requirements.txt
+RUN pip install -r requirements.txt
 
-# install project dependencies
-RUN npm install
+EXPOSE 5000
 
-# Copy the project files
-COPY . .
+CMD flask run --host=0.0.0.0 --port=5000
 
-# Build the project
-RUN npm run build
 
-# Expose a port
-EXPOSE 80
-
-# Executables
-CMD [ "serve", "-s", "dist", "-l", "80" ]
