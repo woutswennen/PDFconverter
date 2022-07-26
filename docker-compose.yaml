@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+    backend:
+        build: ./backend
+        #image: cvtransformer.azurecr.io/cv-transformer-flask-api:v3
+        ports: 
+            - 5000:5000
+
+    frontend:
+        build: ./frontend 
+        #image: cvtransformer.azurecr.io/cv-transformer-vue-app:v3
+        ports: 
+            - 8080:8080
