@@ -1,3 +1,4 @@
+from operator import contains
 import re
 import spacy
 from spacy.matcher import Matcher, PhraseMatcher
@@ -177,7 +178,11 @@ class CVTransformer:
                         span_project_description = doc[end:date_matches[i + 1][1]].text.splitlines()
                     else:
                         span_project_description = doc[end::].text.splitlines()
-                    project.role, project.client = span_project_description.pop(0).strip(' —.').split(',', 1)
+                    
+                    span_project_header = span_project_description.pop(0)
+                    if not ',' in span_project_header:
+                        span_project_header = span_project_header + ' ' + span_project_description.pop(0)
+                    project.role, project.client = span_project_header.strip(' —.').split(',', 1)
                     project.tasks = " ".join(span_project_description)
                     # check methodologies in tasks
                     if 'scrum' in project.tasks.lower():
@@ -216,10 +221,14 @@ class CVTransformer:
                         span_description = doc[end:date_matches[i + 1][1]].text
                     else:
                         span_description = doc[end::].text
-
+                        
                     span_cert_title, certification.reference = span_description.split('\n', 1)
-
-                    certification.cert_title, certification.technology = span_cert_title.split(',')
+                    
+                    if ',' in span_cert_title:
+                        certification.cert_title, certification.technology = span_cert_title.split(',')[:2]
+                    else:
+                        certification.cert_title = span_cert_title
+                        
                     self.solitan.certifications.append(certification)
         except KeyError:
             print('No Certifications found!')
@@ -260,9 +269,12 @@ class CVTransformer:
         try:
             doc = self.nlp(self.cv_in_sections['Languages'].strip('\n'))
             for line in doc.text.splitlines():
-                span_language, span_level = line.split(' ', 1)
-                language = Language(span_level)
-                self.solitan.languages[span_language] = language.__dict__
+                try:
+                    span_language, span_level = line.split(' ', 1)
+                    language = Language(span_level)
+                    self.solitan.languages[span_language] = language.__dict__
+                except ValueError:
+                    print('No Languages more found!')
         except KeyError:
             print('No Languages found!')
 

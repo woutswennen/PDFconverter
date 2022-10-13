@@ -17,3 +17,14 @@ cd backend
 python main.py
 ```
 
+## Deploymeny to Azure Cloud Services
+
+### Backend API:
+ 
+ The backend has been deployed as a container running on Azure Apps, the code has being build in the moment on a MAC using Buildx Docker to build it in the linux amd64 architecture needed for the azure instance.
+
+```
+ docker buildx build \
+  --platform linux/amd64 \
+  --load -t cvtransformer.azurecr.io/cv-transformer-flask-api:latest .
+  ```
